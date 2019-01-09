@@ -185,7 +185,8 @@ Settings for MacOS.
     (setq ns-use-native-fullscreen nil))
 #+END_SRC
 * Modeline
-** [[https://github.com/TheBB/spaceline][Spaceline]]
+** Packages
+*** [[https://github.com/TheBB/spaceline][spaceline]]
 While I don't use Spacemacs, its mode line is
 pretty nifty and works well with my theme. Let's install
 and configure it here.
@@ -199,21 +200,7 @@ and configure it here.
     (setq powerline-default-separator nil)
     (spaceline-emacs-theme))
 #+END_SRC
-** Clock
-Tell emacs to Use the 24-hour clock and set the format for the
-clock display.
-
-#+BEGIN_SRC emacs-lisp
-  (setq display-time-24hr-format 1)
-  (setq display-time-format "%H:%M - %d %B %Y")
-#+END_SRC
-
-Enable the clock in the mode line.
-
-#+BEGIN_SRC emacs-lisp
-  (display-time-mode 1)
-#+END_SRC
-** Battery
+*** [[https://github.com/lunaryorn/fancy-battery.el][fancy-battery]]
 =fancy-battery= is a nice package that shows the
 remaining battery usage time. We'll use it when we
 are in GUI emacs. Otherwise, we will use the built-in
@@ -229,10 +216,31 @@ battery mode.
         (fancy-battery-mode 1)
       (display-battery-mode 1)))
 #+END_SRC
+** Clock
+Tell emacs to Use the 24-hour clock and set the format for the
+clock display.
+
+#+BEGIN_SRC emacs-lisp
+  (setq display-time-24hr-format 1)
+  (setq display-time-format "%H:%M - %d %B %Y")
+#+END_SRC
+
+Enable the clock in the mode line.
+
+#+BEGIN_SRC emacs-lisp
+  (display-time-mode 1)
+#+END_SRC
+* Keybindings
+A place to global keybindings.
+
+#+BEGIN_SRC emacs-lisp
+  (bind-key "M-F" 'forward-to-word)
+  (bind-key "M-B" 'backward-to-word)
+#+END_SRC
 * Frames, Windows & Buffers
 ** Functions
 *** kill-focused-buffer
-Kill the current buffer.
+Kill the currently focused buffer.
 
 #+BEGIN_SRC emacs-lisp
   (defun kill-focused-buffer ()
@@ -256,11 +264,11 @@ Kill the current buffer.
      'aw-leading-char-face nil :height 200)
     ;; i prefer keys on the home row to the default 0-9
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-    :bind
-    ("M-o" . ace-window))
+    :bind ("M-o" . ace-window))
 #+END_SRC
 * Files & Directories
-** dired
+** Packages
+*** dired
 Set up some convenient keybindings for ~dired-mode~.
 
 #+BEGIN_SRC emacs-lisp
@@ -283,7 +291,8 @@ Let's install it and configure a keybinding for it.
     :bind (:map dired-mode-map ("e" . 'dired-efap)))
 #+END_SRC
 * Navigation & Discoverability
-** [[https://github.com/justbur/emacs-which-key][which-key]]
+** Packages
+*** [[https://github.com/justbur/emacs-which-key][which-key]]
 ~which-key~ allows for incremental keystroke discoverability.
 It's a great way to manage all of Emac's keybindings without
 having to remember them all! Let's install it and turn it on
@@ -294,7 +303,7 @@ globally.
     :ensure t
     :config (which-key-mode 1))
 #+END_SRC
-** [[https://github.com/emacs-helm/helm][helm]]
+*** [[https://github.com/emacs-helm/helm][helm]]
 Install and configure ~helm~.
 
 #+BEGIN_SRC emacs-lisp
@@ -330,7 +339,7 @@ Install ~helm-ag~ for use with ~ag~ ([[https://github.com/ggreer/the_silver_sear
     :ensure t
     :after (helm))
 #+END_SRC
-** [[https://github.com/abo-abo/swiper][swiper]]
+*** [[https://github.com/abo-abo/swiper][swiper]]
 ~swiper~ is a powerful replacement for the built-in
 ~isearch~, which allows for fuzzy and regexp searching
 in a buffer. Let's install and configure it.
@@ -536,8 +545,6 @@ My hydras.
   (global-set-key (kbd "C-c m") 'hydra-multiple-cursors/body)
 #+END_SRC
 * Text Editing
-It's what we are here to do, after all.
-
 ** Functions
 *** previous-indent-and-open-newline
 #+BEGIN_SRC emacs-lisp
@@ -545,6 +552,8 @@ It's what we are here to do, after all.
       "Call `indent-and-open-newline' with non-nil PREVIOUS value"
       (interactive)
       (indent-and-open-newline t))
+
+  (bind-key "C-o" 'previous-indent-and-open-newline)
 #+END_SRC
 *** indent-and-open-newline
 #+BEGIN_SRC emacs-lisp
@@ -557,15 +566,11 @@ It's what we are here to do, after all.
       (end-of-line)
       (newline)
       (indent-for-tab-command))
-#+END_SRC
-** Keybindings
-#+BEGIN_SRC emacs-lisp
-  (bind-key "C-o" 'previous-indent-and-open-newline)
+
   (bind-key "C-i" 'indent-and-open-newline)
-  (bind-key "M-F" 'forward-to-word)
-  (bind-key "M-B" 'backward-to-word)
 #+END_SRC
-** [[https://github.com/abo-abo/avy][avy]]
+** Packages
+*** [[https://github.com/abo-abo/avy][avy]]
 ~avy~ provides a nice jump-to-char mechanic which is
 useful for hopping around buffers.
 
@@ -579,7 +584,7 @@ useful for hopping around buffers.
     ("M-g w" . 'avy-goto-word-1)
     ("M-g e" . 'avy-goto-word-0))
 #+END_SRC
-** [[https://github.com/magnars/expand-region.el][expand-region]]
+*** [[https://github.com/magnars/expand-region.el][expand-region]]
 From the GitHub page:
 
 /Expand region increases the selected region by semantic units.
@@ -590,7 +595,7 @@ Just keep pressing the key until it selects what you want./
     :ensure
     :bind ("C-=" . 'er/expand-region))
 #+END_SRC
-** [[https://github.com/magnars/multiple-cursors.el][multiple-cursors]]
+*** [[https://github.com/magnars/multiple-cursors.el][multiple-cursors]]
 ~multiple-cursors~ let's you have, well, more than 1 cursor.
 This is especially useful for making similar multi-line edits
 in one go, or for changing the same named symbol in a buffer.
@@ -605,7 +610,7 @@ Let's install it and setup some keybindings.
     ("C-+" . 'mc/mark-next-like-this)
     ("C-_" . 'mc/unmark-next-like-this))
 #+END_SRC
-** [[https://github.com/wyuenho/move-dup][move-dup]]
+*** [[https://github.com/wyuenho/move-dup][move-dup]]
 ~move-dup~ let's you easily move lines and regions around
 inside a buffer. It also makes duplicating single lines up or
 down a breeze. Let's install it and add some keybindings.
@@ -620,7 +625,8 @@ down a breeze. Let's install it and add some keybindings.
     ("M-N" . 'md/duplicate-down))
 #+END_SRC
 * Project Management
-** [[https://github.com/bbatsov/projectile][projectile]]
+** Packages
+*** [[https://github.com/bbatsov/projectile][projectile]]
 ~projectile~ tracks projects in emacs and allows us to to handy things
 like: switching between files in a project or grepping all files within
 a project. Very useful. Let's install it now.
@@ -633,7 +639,7 @@ a project. Very useful. Let's install it now.
     :bind (:map projectile-mode-map
                 ("C-c p" . 'projectile-command-map)))
 #+END_SRC
-** [[https://github.com/bbatsov/helm-projectile][helm-projectile]]
+*** [[https://github.com/bbatsov/helm-projectile][helm-projectile]]
 A ~helm~ front-end for ~projectile~, allowing incremental
 completion for ~projectile~ commands. Let's install and configure it.
 
@@ -646,8 +652,8 @@ completion for ~projectile~ commands. Let's install and configure it.
     (helm-projectile-on))
 #+END_SRC
 * Git
-** Keybindings
-** [[https://github.com/magit/magit][magit]]
+** Packages
+*** [[https://github.com/magit/magit][magit]]
 ~magit~ is the best git front-end. Ever. Plain and simple.
 
 #+BEGIN_SRC emacs-lisp
@@ -716,15 +722,16 @@ Install ~flycheck~.
 #+END_SRC
 ** Languages
 *** Elixir
-**** [[https://github.com/tonini/alchemist.el][alchemist]]
-~alchemist~ is an IDE like set of tools built around
-Elixir. Let's install and configure it.
+**** Packages
+***** [[https://github.com/tonini/alchemist.el][alchemist]]
+~alchemist~ is an IDE-like set of tools built around
+Elixir. Let's install it now.
 
 #+BEGIN_SRC emacs-lisp
   (use-package alchemist
     :ensure t)
 #+END_SRC
-**** Major Mode
+**** Hooks
 #+BEGIN_SRC emacs-lisp
   (add-hook
    'elixir-mode-hook
@@ -798,7 +805,7 @@ The major mode for editing ~typescript~ files.
 #+END_SRC
 ***** [[https://github.com/ananthakumaran/tide/][tide]]
 ~tide~ or *(T)ypeScript (I)nteractive (D)evelopment (E)nvironment*
-is a set of tools that add IDE-like features to TypeScript
+is a set of tools that add IDE-like features for TypeScript
 projects. Let's install and configure it now.
 
 #+BEGIN_SRC emacs-lisp

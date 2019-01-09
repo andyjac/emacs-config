@@ -679,6 +679,15 @@ down a breeze. Let's install it and add some keybindings.
     ("M-P" . 'md/duplicate-up)
     ("M-N" . 'md/duplicate-down))
 #+END_SRC
+*** [[https://github.com/mhayashi1120/Emacs-wgrep][wgrep]]
+~wgrep~ is a writable grep buffer, which I mainly use to do
+quick text replacement after grepping in a file or project.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package wgrep
+    :ensure t
+    :config (setq wgrep-auto-save-buffer t))
+#+END_SRC
 * Project Management
 ** Packages
 *** [[https://github.com/bbatsov/projectile][projectile]]

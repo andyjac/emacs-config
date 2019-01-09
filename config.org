@@ -527,19 +527,19 @@ My hydras.
 
   (defhydra hydra-region (:color pink :hint nil)
     "
-  _f_: forward-word      _n_: next-line          _=_: expand-region     _<_: beginning-of-buffer
-  _b_: backward-word     _p_: previous-line      _-_: contract-region   _>_: end-of-buffer
-  _F_: forward-sentence  _N_: forward-paragraph  _e_: end-of-line       _w_: copy
-  _B_: backward-sentence _P_: backward-paragraph _a_: beginning-of-line _k_: kill
+  _f_: forward-word  _n_: next-line          _=_: expand-region     _<_: beginning-of-buffer
+  _b_: backward-word _p_: previous-line      _-_: contract-region   _>_: end-of-buffer
+  _F_: forward-sexp  _N_: forward-paragraph  _e_: end-of-line       _w_: copy
+  _B_: backward-sexp _P_: backward-paragraph _a_: beginning-of-line _k_: kill
 
-  _M_: multiple-cursors  _L_: move-dup
+  _M_: multiple-cursors _L_: move-dup _S_: replace-string _R_: replace-regexp
 
   _q_: quit
   "
     ("f" forward-word)
     ("b" backward-word)
-    ("F" forward-sentence)
-    ("B" backward-sentence)
+    ("F" forward-sexp)
+    ("B" backward-sexp)
     ("n" next-line)
     ("p" previous-line)
     ("N" forward-paragraph)
@@ -554,7 +554,9 @@ My hydras.
     (">" end-of-buffer)
     ("M" hydra-multiple-cursors/body :color blue)
     ("L" hydra-move-dup/body :color blue)
-    ("q" unset-mark :color blue))
+    ("S" replace-string :color blue)
+    ("R" replace-regexp :color blue)
+    ("q" nil))
 
   (global-set-key (kbd "C-SPC") 'hydra-set-mark)
 #+END_SRC

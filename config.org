@@ -619,7 +619,7 @@ My hydras.
       (newline)
       (indent-for-tab-command))
 
-  (bind-key "C-i" 'indent-and-open-newline)
+  (bind-key "C-M-o" 'indent-and-open-newline)
 #+END_SRC
 ** Packages
 *** [[https://github.com/abo-abo/avy][avy]]

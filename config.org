@@ -420,10 +420,13 @@ My hydras.
 #+BEGIN_SRC emacs-lisp
   (defhydra hydra-help (:color blue :hint nil)
     "
-  _m_an              _c_ommand    _f_unction
-  _a_propos          _l_ibrary
-  _d_ocumentation    _u_ser-option
-  _v_ariable     valu_e_"
+  _m_: man           _c_: command     _f_: function
+  _a_: apropos       _l_: library
+  _d_: documentation _u_: user-option
+  _v_: variable      _e_: value
+
+  _q_: quit
+  "
     ("m" man)
     ("a" apropos)
     ("d" apropos-documentation)
@@ -432,7 +435,8 @@ My hydras.
     ("l" apropos-library)
     ("u" apropos-user-option)
     ("e" apropos-value)
-    ("f" describe-function))
+    ("f" describe-function)
+    ("q" nil))
 
   (global-set-key (kbd "C-c h") 'hydra-help/body)
 #+END_SRC
@@ -442,46 +446,62 @@ My hydras.
     "
   _i_: init        _z_: stash
   _s_: status      _b_: blame
-  _l_: log current
+  _l_: log current _t_: git-timemachine
   _L_: log other
+
+  _q_: quit
   "
     ("i" magit-init)
     ("s" magit-status)
     ("l" magit-log-current)
     ("L" magit-log)
     ("z" magit-stash)
-    ("b" magit-blame))
+    ("b" magit-blame)
+    ("t" git-timemachine)
+    ("q" nil))
 
   (global-set-key (kbd "C-c g") 'hydra-git/body)
 #+END_SRC
 *** window
 #+BEGIN_SRC emacs-lisp
-  (defhydra hydra-window (:color red)
-    "Window"
-    ("o" ace-window "ace")
-    ("d" ace-delete-window "ace-delete")
-    ("F" toggle-frame-fullscreen "fullscreen")
-    ("3" (lambda ()
-           (interactive)
-           (split-window-right)
-           (windmove-right))
-     "vert")
+  (defun hydra-window-find-file (arg)
+    (interactive "P")
+    (if (equal (projectile-project-type) nil)
+        (helm-find-files arg)
+      (projectile-find-file)))
+
+  (defhydra hydra-window (:color red :hint nil)
+    "
+  _o_: ace-window          _0_: delete-window        _h_: windmove-left  _F_: toggle-frame-fullscreen
+  _d_: ace-delete-window   _1_: delete-other-windows _l_: windmove-right _b_: ido-switch-buffer
+  _i_: ace-maximize-window _2_: split-window-below   _j_: windmove-down  _p_: helm-projectile
+  _s_: ace-swap-window     _3_: split-window-right   _k_: windmove-up    _f_: find-file
+
+  _q_: quit
+  "
+    ("o" ace-window)
+    ("d" ace-delete-window)
+    ("s" ace-swap-window)
+    ("i" ace-maximize-window :color blue)
+    ("0" delete-window)
+    ("1" delete-other-windows :color blue)
     ("2" (lambda ()
            (interactive)
            (split-window-below)
-           (windmove-down))
-     "horiz")
-    ("1" delete-other-windows "one" :exit t)
-    ("0" delete-window "delete")
-    ("s" ace-swap-window "swap")
-    ("i" ace-maximize-window "ace-one" :exit t)
-    ("b" ido-switch-buffer "buf")
-    ("h" windmove-left nil)
-    ("j" windmove-down nil)
-    ("k" windmove-up nil)
-    ("l" windmove-right nil)
-    ("p" helm-projectile "projectile" :exit t)
-    ("q" nil "quit"))
+           (windmove-down)))
+    ("3" (lambda ()
+           (interactive)
+           (split-window-right)
+           (windmove-right)))
+    ("h" windmove-left)
+    ("l" windmove-right)
+    ("j" windmove-down)
+    ("k" windmove-up)
+    ("F" toggle-frame-fullscreen)
+    ("b" ido-switch-buffer)
+    ("p" helm-projectile)
+    ("f" hydra-window-find-file)
+    ("q" nil))
 
   (global-set-key (kbd "C-c w") 'hydra-window/body)
 #+END_SRC
@@ -722,6 +742,14 @@ completion for ~projectile~ commands. Let's install and configure it.
 
 #+BEGIN_SRC emacs-lisp
   (use-package magit
+    :ensure t)
+#+END_SRC
+*** [[https://gitlab.com/pidu/git-timemachine][git-timemachine]]
+A neat package that allows you to step forward and backward
+in time for the git history of a specific file.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package git-timemachine
     :ensure t)
 #+END_SRC
 * Programming

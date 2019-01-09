@@ -174,7 +174,7 @@ Tell emacs to use [[https://adobe-fonts.github.io/source-code-pro/][Source Code 
   (add-to-list 'default-frame-alist '(font . "Source Code Pro-14"))
 #+END_SRC
 * Darwin
-Settings for osx.
+Settings for MacOS.
 
 #+BEGIN_SRC emacs-lisp
   (when (string-equal system-type 'darwin)

@@ -398,8 +398,11 @@ in a buffer. Let's install and configure it.
   (use-package swiper
     :ensure t
     :bind
-    ("C-s" . swiper)
-    ("C-r" . swiper)
+    (("C-s" . swiper)
+     ("C-r" . swiper)
+     :map swiper-map
+     ("C-*" . 'swiper-mc)
+     ("C-r" . 'swiper-query-replace))
     :config
     (setq ivy-height 15))
 #+END_SRC

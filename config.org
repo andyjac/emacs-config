@@ -249,11 +249,61 @@ Kill the currently focused buffer.
 
   (bind-key "C-x C-k"    'kill-focused-buffer)
 #+END_SRC
-** Keybindings
+*** toggle-window-split
+Toggles the direction in which windows are split (horizontal/vertical).
+
 #+BEGIN_SRC emacs-lisp
-  (bind-key "C-c f" 'toggle-frame-fullscreen)
+  (defun toggle-window-split ()
+    (interactive)
+    (if (= (count-windows) 2)
+        (let* ((this-win-buffer (window-buffer))
+               (next-win-buffer (window-buffer (next-window)))
+               (this-win-edges (window-edges (selected-window)))
+               (next-win-edges (window-edges (next-window)))
+               (this-win-2nd (not (and (<= (car this-win-edges)
+                                           (car next-win-edges))
+                                       (<= (cadr this-win-edges)
+                                           (cadr next-win-edges)))))
+               (splitter
+                (if (= (car this-win-edges)
+                       (car (window-edges (next-window))))
+                    'split-window-horizontally
+                  'split-window-vertically)))
+          (delete-other-windows)
+          (let ((first-win (selected-window)))
+            (funcall splitter)
+            (if this-win-2nd (other-window 1))
+            (set-window-buffer (selected-window) this-win-buffer)
+            (set-window-buffer (next-window) next-win-buffer)
+            (select-window first-win)
+            (if this-win-2nd (other-window 1))))))
+
+  (bind-key "C-M-]" 'toggle-window-split)
 #+END_SRC
-** [[https://github.com/abo-abo/ace-window][ace-window]]
+*** rotate-windows-in-frame
+Rotates the windows inside the current frame in a counter-clockwise direction.
+
+#+BEGIN_SRC emacs-lisp
+  (defun rotate-windows-in-frame ()
+      (interactive)
+      (let ((map
+             (mapcar
+              (lambda (window)
+                `(,window
+                  ,(window-buffer
+                    (next-window window))))
+              (window-list))))
+        (mapcar
+         (lambda (window-to-buffer)
+           (let ((window (car window-to-buffer))
+                 (buffer (cadr window-to-buffer)))
+             (select-window window)
+             (switch-to-buffer buffer))) map)))
+
+  (bind-key "C-|" 'rotate-windows-in-frame)
+#+END_SRC
+** Packages
+*** [[https://github.com/abo-abo/ace-window][ace-window]]
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
     :ensure t

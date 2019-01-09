@@ -1,0 +1,823 @@
+#+TITLE: Emacs Config
+#+AUTHOR: Andrew Jacobson
+#+STARTUP: overview
+#+STARTUP: indent
+#+LANGUAGE: en
+
+* Personal Deets
+In case my emacs gets lost.
+
+#+BEGIN_SRC emacs-lisp
+  (setq user-full-name "Andrew Jacobson"
+        user-mail-address "andrew.isaac.jacobson@gmail.com")
+#+END_SRC
+* Custom File
+Load auto-generated =custom.el= file from the dotemacs dir.
+
+#+BEGIN_SRC emacs-lisp
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (load custom-file)
+#+END_SRC
+* Sane Defaults
+** Form
+*** UTF-8
+UTF-8. UTF-8, everywhere.
+
+#+BEGIN_SRC emacs-lisp
+  (setq locale-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+#+END_SRC
+*** Remove cursor blink
+No blink.
+
+#+BEGIN_SRC emacs-lisp
+  (blink-cursor-mode -1)
+#+END_SRC
+*** Tabs
+Prevent tab indentation and set default tab-width.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 2)
+  (setq-default indicate-empty-lines t)
+#+END_SRC
+*** Show matching parens
+Highlight opening/closing paren when cursor is
+on/after opening/closing paren respectively.
+
+#+BEGIN_SRC emacs-lisp
+  (show-paren-mode 1)
+#+END_SRC
+*** Show line and column number
+Show the current line and column number in the mode line.
+
+#+BEGIN_SRC emacs-lisp
+  (line-number-mode 1)
+  (column-number-mode 1)
+#+END_SRC
+*** Display line numbers
+Turn on ~linum-mode~ globally.
+
+#+BEGIN_SRC emacs-lisp
+  (global-linum-mode)
+#+END_SRC
+*** Highlight current line
+Highlight the line that the cursor is currently on. But only when
+programming.
+
+#+BEGIN_SRC emacs-lisp
+  (when window-system
+    (add-hook 'prog-mode-hook 'hl-line-mode))
+#+END_SRC
+*** Disable mouse interface
+Disable all mouse interfaces since I never use them, but only for
+the GUI version.
+
+#+BEGIN_SRC emacs-lisp
+  (when window-system
+    (menu-bar-mode -1)
+    (tool-bar-mode -1)
+    (scroll-bar-mode -1)
+    (tooltip-mode -1))
+#+END_SRC
+*** Disable the default splash screen
+This disables the default startup screen. I
+am replacing it with =dashboard= later anyway.
+
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-message t)
+#+END_SRC
+** Function
+*** Require newline at EOF
+Add a newline to the end of a file on save.
+
+#+BEGIN_SRC emacs-lisp
+  (setq require-final-newline t)
+  (setq require-trailing-newline t)
+#+END_SRC
+*** Allow 'y' or 'n' answers
+Typing 'yes' or 'no' is tedious. Tell emacs to allow 'y' and 'n' instead.
+
+#+BEGIN_SRC emacs-lisp
+  (defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+*** Set backup directory
+Set backups and auto-save-list directories.
+
+#+BEGIN_SRC emacs-lisp
+  (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+  (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
+#+END_SRC
+*** Delete region when typing
+Delete selected region when typing, like you'd expect.
+
+#+BEGIN_SRC emacs-lisp
+  (delete-selection-mode 1)
+#+END_SRC
+*** No bell
+Shhhh.
+
+#+BEGIN_SRC emacs-lisp
+  (setq visible-bell nil)
+  (setq ring-bell-function 'ignore)
+#+END_SRC
+*** Delete trailing white space on save
+Clean up superfluous white space in buffer on save.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+#+END_SRC
+*** Make it easy to edit this file
+Add a function to jump straight to this file.
+
+#+BEGIN_SRC emacs-lisp
+  (defun aj/find-config ()
+    "Edit `config.org' file"
+    (interactive)
+    (find-file
+     (concat user-emacs-directory "config.org")))
+
+  (bind-key "C-c e" 'aj/find-config)
+#+END_SRC
+*** Load path
+Setup ~load-path~.
+
+#+BEGIN_SRC emacs-lisp
+  ;; (defun aj/expand-file-name-in-emacs-dir (name)
+  ;;   "Expands NAME to an absolute path inside the `user-emacs-directory'."
+  ;;   (expand-file-name name user-emacs-directory))
+
+  ;; (add-to-list 'load-path (aj/expand-file-name-in-emacs-dir "git"))
+  ;; (add-to-list 'load-path (aj/expand-file-name-in-emacs-dir "etc"))
+  ;; (add-to-list 'load-path (aj/expand-file-name-in-emacs-dir "git/distel/elisp/"))
+#+END_SRC
+*** Use line wrapping
+#+BEGIN_SRC emacs-lisp
+  (global-visual-line-mode 1)
+#+END_SRC
+* Theme
+The most important piece of any editor configuration: A good dark theme.
+I like the ~gruvbox~ themes.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package gruvbox-theme
+    :ensure t
+    :init (load-theme 'gruvbox-dark-hard))
+#+END_SRC
+* Font
+Tell emacs to use [[https://adobe-fonts.github.io/source-code-pro/][Source Code Pro]] as its default font.
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'default-frame-alist '(font . "Source Code Pro-14"))
+#+END_SRC
+* Darwin
+Settings for osx.
+
+#+BEGIN_SRC emacs-lisp
+  (when (string-equal system-type 'darwin)
+    (setq mac-option-modifier 'alt)
+    (setq mac-command-modifier 'meta)
+    (setq mac-pass-command-to-system nil)
+    (setq dired-use-ls-dired nil)
+    (setq ns-use-native-fullscreen nil))
+#+END_SRC
+* Modeline
+** [[https://github.com/TheBB/spaceline][Spaceline]]
+While I don't use Spacemacs, its mode line is
+pretty nifty and works well with my theme. Let's install
+and configure it here.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package spaceline
+    :ensure t
+    :config
+    (require 'spaceline-config)
+    (setq spaceline-buffer-encoding-abbrev-p nil)
+    (setq powerline-default-separator nil)
+    (spaceline-emacs-theme))
+#+END_SRC
+** Clock
+Tell emacs to Use the 24-hour clock and set the format for the
+clock display.
+
+#+BEGIN_SRC emacs-lisp
+  (setq display-time-24hr-format 1)
+  (setq display-time-format "%H:%M - %d %B %Y")
+#+END_SRC
+
+Enable the clock in the mode line.
+
+#+BEGIN_SRC emacs-lisp
+  (display-time-mode 1)
+#+END_SRC
+** Battery
+=fancy-battery= is a nice package that shows the
+remaining battery usage time. We'll use it when we
+are in GUI emacs. Otherwise, we will use the built-in
+battery mode.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package fancy-battery
+    :ensure t
+    :config
+    (setq fancy-battery-show-percentage t)
+    (setq battery-update-interval 15)
+    (if window-system
+        (fancy-battery-mode 1)
+      (display-battery-mode 1)))
+#+END_SRC
+* Frames, Windows & Buffers
+** Functions
+*** kill-focused-buffer
+Kill the current buffer.
+
+#+BEGIN_SRC emacs-lisp
+  (defun kill-focused-buffer ()
+      (interactive)
+      (kill-buffer (current-buffer)))
+
+  (bind-key "C-x C-k"    'kill-focused-buffer)
+#+END_SRC
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (bind-key "C-c f" 'toggle-frame-fullscreen)
+#+END_SRC
+** [[https://github.com/abo-abo/ace-window][ace-window]]
+#+BEGIN_SRC emacs-lisp
+  (use-package ace-window
+    :ensure t
+    :config
+    (set-face-attribute
+     'aw-background-face nil :foreground "gray40")
+    (set-face-attribute
+     'aw-leading-char-face nil :height 200)
+    ;; i prefer keys on the home row to the default 0-9
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    :bind
+    ("M-o" . ace-window))
+#+END_SRC
+* Files & Directories
+** dired
+Set up some convenient keybindings for ~dired-mode~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package dired
+    :bind
+    (("C-x C-d" . 'dired-jump)
+     :map dired-mode-map
+          ("<backspace>" . 'dired-up-directory)))
+#+END_SRC
+
+~dired-efap~ is a nice little package that let's you
+*(e)dit a (f)ile (a)t (p)oint* when in ~dired-mode~.
+Let's install it and configure a keybinding for it.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package dired-efap
+    :ensure t
+    :config
+    (setq dired-efap-initial-filename-selection nil)
+    :bind (:map dired-mode-map ("e" . 'dired-efap)))
+#+END_SRC
+* Navigation & Discoverability
+** [[https://github.com/justbur/emacs-which-key][which-key]]
+~which-key~ allows for incremental keystroke discoverability.
+It's a great way to manage all of Emac's keybindings without
+having to remember them all! Let's install it and turn it on
+globally.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :ensure t
+    :config (which-key-mode 1))
+#+END_SRC
+** [[https://github.com/emacs-helm/helm][helm]]
+Install and configure ~helm~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm
+    :ensure t
+    :bind
+    ("C-x C-f" . helm-find-files)
+    ("C-x C-b" . helm-buffers-list)
+    ("M-x" . helm-M-x)
+    :config
+    (setq helm-split-window-in-side-p nil
+          helm-autoresize-max-height 0
+          helm-autoresize-min-height 40
+          helm-M-x-fuzzy-match t
+          helm-buffers-fuzzy-matching t
+          helm-recentf-fuzzy-match t
+          helm-semantic-fuzzy-match t
+          helm-imenu-fuzzy-match t
+          helm-echo-input-in-header-line t)
+    :init
+    (helm-mode 1)
+    (helm-autoresize-mode 1)
+    :bind
+    (:map helm-find-files-map
+          ("C-b" . helm-find-files-up-one-level)
+          ("C-f" . helm-execute-persistent-action)))
+#+END_SRC
+
+Install ~helm-ag~ for use with ~ag~ ([[https://github.com/ggreer/the_silver_searcher][the silerver searcher]]).
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-ag
+    :ensure t
+    :after (helm))
+#+END_SRC
+** [[https://github.com/abo-abo/swiper][swiper]]
+~swiper~ is a powerful replacement for the built-in
+~isearch~, which allows for fuzzy and regexp searching
+in a buffer. Let's install and configure it.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package swiper
+    :ensure t
+    :bind
+    ("C-s" . swiper)
+    ("C-r" . swiper)
+    :config
+    (setq ivy-height 15))
+#+END_SRC
+* [[https://github.com/abo-abo/hydra][Hydra]]
+Install ~hydra~ package.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :ensure t)
+#+END_SRC
+** hydras
+My hydras.
+
+*** help
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-help (:color blue :hint nil)
+    "
+  _m_an              _c_ommand    _f_unction
+  _a_propos          _l_ibrary
+  _d_ocumentation    _u_ser-option
+  _v_ariable     valu_e_"
+    ("m" man)
+    ("a" apropos)
+    ("d" apropos-documentation)
+    ("v" apropos-variable)
+    ("c" apropos-command)
+    ("l" apropos-library)
+    ("u" apropos-user-option)
+    ("e" apropos-value)
+    ("f" describe-function))
+
+  (global-set-key (kbd "C-c h") 'hydra-help/body)
+#+END_SRC
+*** git
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-git (:color blue :hint nil)
+    "
+  _i_: init        _z_: stash
+  _s_: status      _b_: blame
+  _l_: log current
+  _L_: log other
+  "
+    ("i" magit-init)
+    ("s" magit-status)
+    ("l" magit-log-current)
+    ("L" magit-log)
+    ("z" magit-stash)
+    ("b" magit-blame))
+
+  (global-set-key (kbd "C-c g") 'hydra-git/body)
+#+END_SRC
+*** window
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-window (:color red)
+    "Window"
+    ("o" ace-window "ace")
+    ("d" ace-delete-window "ace-delete")
+    ("F" toggle-frame-fullscreen "fullscreen")
+    ("3" (lambda ()
+           (interactive)
+           (split-window-right)
+           (windmove-right))
+     "vert")
+    ("2" (lambda ()
+           (interactive)
+           (split-window-below)
+           (windmove-down))
+     "horiz")
+    ("1" delete-other-windows "one" :exit t)
+    ("0" delete-window "delete")
+    ("s" ace-swap-window "swap")
+    ("i" ace-maximize-window "ace-one" :exit t)
+    ("b" ido-switch-buffer "buf")
+    ("h" windmove-left nil)
+    ("j" windmove-down nil)
+    ("k" windmove-up nil)
+    ("l" windmove-right nil)
+    ("p" helm-projectile "projectile" :exit t)
+    ("q" nil "quit"))
+
+  (global-set-key (kbd "C-c w") 'hydra-window/body)
+#+END_SRC
+*** move-dup
+#+BEGIN_SRC emacs-lisp
+  ;; (defun last-line? ()
+  ;;   "Returns t if the cursor is positioned on the last
+  ;; line of the currently selected buffer. Otherwise returns nil."
+  ;;   (interactive)
+  ;;   (save-excursion
+  ;;     (let ((current-pos (point)) end-pos)
+  ;;       (forward-page)
+  ;;       (end-of-line)
+  ;;       (or (looking-at page-delimiter)
+  ;;           (end-of-line))
+  ;;       (setq end-pos (point))
+  ;;       (message "current-pos: %d, end-pos: %d" current-pos end-pos)
+  ;;       (eq current-pos end-pos))))
+
+  (defhydra hydra-move-dup (:color pink)
+    "Move/Dup"
+    ("k" md/move-lines-up "move-up")
+    ("j" md/move-lines-down "move-down")
+    ("p" md/duplicate-up "dup-up")
+    ("n" md/duplicate-down "dup-down")
+    ("q" nil "quit"))
+
+  (global-set-key (kbd "C-c l") 'hydra-move-dup/body)
+#+END_SRC
+*** selection
+#+BEGIN_SRC emacs-lisp
+  (defun hydra-set-mark ()
+    (interactive)
+    (if (region-active-p)
+        (progn
+          (deactivate-mark)
+          (hydra-keyboard-quit))
+      (call-interactively 'set-mark-command)
+      (hydra-region/body)))
+
+  (defun unset-mark ()
+    (interactive)
+    (if (region-active-p)
+        (progn
+          (deactivate-mark))))
+
+  (defhydra hydra-region (:color pink :hint nil)
+    "
+  _f_: forward-word      _n_: next-line          _=_: expand-region     _<_: beginning-of-buffer
+  _b_: backward-word     _p_: previous-line      _-_: contract-region   _>_: end-of-buffer
+  _F_: forward-sentence  _N_: forward-paragraph  _e_: end-of-line       _w_: copy
+  _B_: backward-sentence _P_: backward-paragraph _a_: beginning-of-line _k_: kill
+
+  _M_: multiple-cursors  _L_: move-dup
+
+  _q_: quit
+  "
+    ("f" forward-word)
+    ("b" backward-word)
+    ("F" forward-sentence)
+    ("B" backward-sentence)
+    ("n" next-line)
+    ("p" previous-line)
+    ("N" forward-paragraph)
+    ("P" backward-paragraph)
+    ("e" end-of-line)
+    ("a" beginning-of-line)
+    ("=" er/expand-region)
+    ("-" er/contract-region)
+    ("w" copy-region-as-kill :color blue)
+    ("k" kill-region :color blue)
+    ("<" beginning-of-buffer)
+    (">" end-of-buffer)
+    ("M" hydra-multiple-cursors/body :color blue)
+    ("L" hydra-move-dup/body :color blue)
+    ("q" unset-mark :color blue))
+
+  (global-set-key (kbd "C-SPC") 'hydra-set-mark)
+#+END_SRC
+*** toggle
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-toggle (:color pink :hint nil)
+    "
+    _a_ abbrev-mode:       %`abbrev-mode
+    _d_ debug-on-error:    %`debug-on-error
+    _f_ auto-fill-mode:    %`auto-fill-function
+    _h_ highlight          %`highlight-nonselected-windows
+    _t_ truncate-lines:    %`truncate-lines
+    _w_ whitespace-mode:   %`whitespace-mode
+    _l_ org link display:  %`org-descriptive-links
+    "
+    ("a" abbrev-mode)
+    ("d" toggle-debug-on-error)
+    ("f" auto-fill-mode)
+    ("h" (setq highlight-nonselected-windows (not highlight-nonselected-windows)))
+    ("t" toggle-truncate-lines)
+    ("w" whitespace-mode)
+    ("l" org-toggle-link-display)
+    ("q" nil "quit"))
+
+  ;; toggle `whitespace-mode' to inhibit first run error
+  (whitespace-mode)
+  (whitespace-mode)
+  (global-set-key (kbd "C-c t") 'hydra-toggle/body)
+#+END_SRC
+*** multiple-cursors
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-multiple-cursors (:color pink)
+    "Multiple Cursors"
+    ("n" mc/mark-next-like-this "mark-next")
+    ("p" mc/unmark-next-like-this "unmark-next")
+    ("q" nil "quit"))
+
+  (global-set-key (kbd "C-c m") 'hydra-multiple-cursors/body)
+#+END_SRC
+* Text Editing
+It's what we are here to do, after all.
+
+** Functions
+*** previous-indent-and-open-newline
+#+BEGIN_SRC emacs-lisp
+  (defun previous-indent-and-open-newline ()
+      "Call `indent-and-open-newline' with non-nil PREVIOUS value"
+      (interactive)
+      (indent-and-open-newline t))
+#+END_SRC
+*** indent-and-open-newline
+#+BEGIN_SRC emacs-lisp
+  (defun indent-and-open-newline (&optional previous)
+      "Add a newline after current line and tab to indentation.
+      If PREVIOUS is non-nil, go up a line first."
+      (interactive)
+      (if previous
+          (previous-line))
+      (end-of-line)
+      (newline)
+      (indent-for-tab-command))
+#+END_SRC
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (bind-key "C-o" 'previous-indent-and-open-newline)
+  (bind-key "C-i" 'indent-and-open-newline)
+  (bind-key "M-F" 'forward-to-word)
+  (bind-key "M-B" 'backward-to-word)
+#+END_SRC
+** [[https://github.com/abo-abo/avy][avy]]
+~avy~ provides a nice jump-to-char mechanic which is
+useful for hopping around buffers.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :bind
+    ("C-:" . 'avy-goto-char)
+    ("C-'" . 'avy-goto-char-2)
+    ("M-g f" . 'avy-goto-line)
+    ("M-g w" . 'avy-goto-word-1)
+    ("M-g e" . 'avy-goto-word-0))
+#+END_SRC
+** [[https://github.com/magnars/expand-region.el][expand-region]]
+From the GitHub page:
+
+/Expand region increases the selected region by semantic units.
+Just keep pressing the key until it selects what you want./
+
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure
+    :bind ("C-=" . 'er/expand-region))
+#+END_SRC
+** [[https://github.com/magnars/multiple-cursors.el][multiple-cursors]]
+~multiple-cursors~ let's you have, well, more than 1 cursor.
+This is especially useful for making similar multi-line edits
+in one go, or for changing the same named symbol in a buffer.
+
+Let's install it and setup some keybindings.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package multiple-cursors
+    :ensure t
+    :bind
+    ;; ("C-c m" . 'mc/mark-all-dwim)
+    ("C-+" . 'mc/mark-next-like-this)
+    ("C-_" . 'mc/unmark-next-like-this))
+#+END_SRC
+** [[https://github.com/wyuenho/move-dup][move-dup]]
+~move-dup~ let's you easily move lines and regions around
+inside a buffer. It also makes duplicating single lines up or
+down a breeze. Let's install it and add some keybindings.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package move-dup
+    :ensure t
+    :bind
+    ("C-S-p" . 'md/move-lines-up)
+    ("C-S-n" . 'md/move-lines-down)
+    ("M-P" . 'md/duplicate-up)
+    ("M-N" . 'md/duplicate-down))
+#+END_SRC
+* Project Management
+** [[https://github.com/bbatsov/projectile][projectile]]
+~projectile~ tracks projects in emacs and allows us to to handy things
+like: switching between files in a project or grepping all files within
+a project. Very useful. Let's install it now.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :init
+    (projectile-global-mode 1)
+    :bind (:map projectile-mode-map
+                ("C-c p" . 'projectile-command-map)))
+#+END_SRC
+** [[https://github.com/bbatsov/helm-projectile][helm-projectile]]
+A ~helm~ front-end for ~projectile~, allowing incremental
+completion for ~projectile~ commands. Let's install and configure it.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-projectile
+    :after (projectile)
+    :ensure t
+    :config
+    (setq projectile-completion-system 'helm)
+    (helm-projectile-on))
+#+END_SRC
+* Git
+** Keybindings
+** [[https://github.com/magit/magit][magit]]
+~magit~ is the best git front-end. Ever. Plain and simple.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t)
+#+END_SRC
+* Programming
+** General
+*** [[https://github.com/Fuco1/smartparens][smartparens]]
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+    :ensure t
+    :config
+    (use-package smartparens-config)
+    (smartparens-global-mode 1))
+#+END_SRC
+*** rainbow-mode
+#+BEGIN_SRC emacs-lisp
+  ;; (define-globalized-minor-mode global-rainbow-mode rainbow-mode
+  ;;   (lambda () (rainbow-mode 1)))
+
+  (defun aj/hook--prog-mode ()
+    "hook for `prog-mode'"
+    ;; turn on `rainbow-mode'
+    (message "enabling rainbow-mode...")
+    (rainbow-mode 1))
+
+  (use-package rainbow-mode
+    :ensure t
+    :hook
+    (prog-mode-hook . aj/hook--prog-mode)
+    (org-mode-hook . rainbow-mode)
+    (lisp-interaction-mode-hook . rainbow-mode))
+#+END_SRC
+** Snippets
+** Completion
+*** Company
+~company-mode~ is my preferred completion engine. Let's
+install it and do some basic configuration.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :config
+    ;; no delay before showing completion candidates
+    (setq company-idle-delay 0)
+    ;; show completion candidates after 3 chars are typed
+    (setq company-minimum-prefix-length 3)
+    :bind
+    (:map company-active-map
+          ("M-n" . nil)
+          ("M-p" . nil)
+          ("C-n" . 'company-select-next)
+          ("C-j" . 'company-select-next)
+          ("C-p" . 'company-select-previous)
+          ("C-k" . 'company-select-previous)
+          ("C-f" . 'company-filter-candidates)))
+#+END_SRC
+** Linting
+*** [[https://github.com/flycheck/flycheck][flycheck]]
+Install ~flycheck~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t)
+#+END_SRC
+** Languages
+*** Elixir
+**** [[https://github.com/tonini/alchemist.el][alchemist]]
+~alchemist~ is an IDE like set of tools built around
+Elixir. Let's install and configure it.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package alchemist
+    :ensure t)
+#+END_SRC
+**** Major Mode
+#+BEGIN_SRC emacs-lisp
+  (add-hook
+   'elixir-mode-hook
+   (lambda ()
+     (add-hook 'before-save-hook 'elixir-format)))
+#+END_SRC
+**** Completion
+Enable ~company-mode~ for all Elixir modes.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'elixir-mode-hook 'company-mode)
+  (add-hook 'alchemist-iex-mode-hook 'company-mode)
+#+END_SRC
+*** Lisp
+**** [[https://github.com/abo-abo/lispy][lispy]]
+I'm trying out ~lispy~, a package similar to ~paredit~ but
+with short, magical keybindings. Let's install it and enable
+it for lisp languages.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package lispy
+    :ensure t
+    :hook
+    (lisp-mode . lispy-mode)
+    (emacs-lisp-mode . lispy-mode)
+    :bind
+    (:map lispy-mode-map
+          ("`" . 'self-insert-command)
+          ("M-o" . 'ace-window)))
+#+END_SRC
+**** [[https://github.com/slime/slime][slime]]
+*(S)uperior (L)isp (I)nteraction (M)ode for (E)macs* is a
+collection of handy tools that can be used with a range of
+lisp implementations. Let's install it now.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package slime
+    :ensure t
+    :config
+    (setq inferior-lisp-program "/usr/local/bin/sbcl")
+    (setq slime-contribs '(slime-fancy)))
+#+END_SRC
+**** Dialects
+***** Emacs Lisp (elisp)
+****** TODO Snippets
+****** Completion
+Enable ~company-mode~ for ~emacs-lisp-mode~.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook 'company-mode)
+#+END_SRC
+****** TODO Linting
+***** Common Lisp
+****** TODO Snippets
+****** Completion
+Enable ~company-mode~ for ~lisp-mode~.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'lisp-mode-hook 'company-mode)
+#+END_SRC
+****** TODO Linting
+*** TypeScript
+**** Packages
+***** [[https://github.com/emacs-typescript/typescript.el][typescript-mode]]
+The major mode for editing ~typescript~ files.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package typescript-mode
+    :ensure t
+    :mode (("\\.ts\\'" . typescript-mode)))
+#+END_SRC
+***** [[https://github.com/ananthakumaran/tide/][tide]]
+~tide~ or *(T)ypeScript (I)nteractive (D)evelopment (E)nvironment*
+is a set of tools that add IDE-like features to TypeScript
+projects. Let's install and configure it now.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package tide
+    :ensure t
+    :after (typescript-mode)
+    :hook
+    (typescript-mode .
+     (lambda ()
+       (setq flycheck-check-syntax-automatically '(save mode-enabled))
+       (tide-setup)
+       (tide-hl-identifier-mode 1)
+       (eldoc-mode 1))))
+#+END_SRC
+**** Linting
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'typescript-mode-hook 'flycheck-mode)
+#+END_SRC
+**** Completion
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'typescript-mode-hook 'company-mode)
+#+END_SRC

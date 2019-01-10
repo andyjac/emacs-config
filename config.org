@@ -681,7 +681,7 @@ Let's install it and setup some keybindings.
   (use-package multiple-cursors
     :ensure t
     :bind
-    ;; ("C-c m" . 'mc/mark-all-dwim)
+    ("C-c C-m" . 'mc/mark-all-dwim)
     ("C-+" . 'mc/mark-next-like-this)
     ("C-_" . 'mc/unmark-next-like-this))
 #+END_SRC

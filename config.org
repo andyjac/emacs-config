@@ -416,6 +416,114 @@ Install ~hydra~ package.
 ** hydras
 My hydras.
 
+*** avy
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-avy (:color blue :hint nil)
+    "
+    _C_: char
+    _L_: line
+    _S_: symbol
+    _W_: word
+
+    _q_: quit
+  "
+    ("C" hydra-avy-char/body)
+    ("L" hydra-avy-line/body)
+    ("S" hydra-avy-symbol/body)
+    ("W" hydra-avy-word/body)
+    ("q" nil))
+
+  (defhydra hydra-avy-char (:color pink :hint nil)
+    "
+    _c_: goto-char         _l_: goto-char-in-line
+    _2_: goto-char-2       _f_: goto-char-timer
+    _p_: goto-char-2-above
+    _n_: goto-char-2-below
+
+    _q_: quit
+  "
+    ("c" avy-goto-char)
+    ("2" avy-goto-char-2)
+    ("p" avy-goto-char-2-above)
+    ("n" avy-goto-char-2-below)
+    ("l" avy-goto-char-in-line)
+    ("f" avy-goto-char-timer)
+    ("q" nil))
+
+  (defhydra hydra-avy-line (:color pink :hint nil)
+    "
+    _w_: copy-line           _l_: goto-line
+    _k_: kill-ring-save-line _p_: goto-line-above
+    _K_: kill-line           _n_: goto-line-below
+    _m_: move-line           _e_: goto-end-of-line
+
+    _q_: quit
+  "
+    ("w" avy-copy-line)
+    ("k" avy-kill-whole-line)
+    ("K" avy-kill-ring-save-whole-line)
+    ("m" avy-move-line)
+    ("l" avy-goto-line)
+    ("p" avy-goto-line-above)
+    ("n" avy-goto-line-below)
+    ("e" avy-goto-end-of-line)
+    ("q" nil))
+
+  (defhydra hydra-avy-symbol (:color pink :hint nil)
+    "
+    _1_: goto-symbol-1
+    _p_: goto-symbol-1-above
+    _n_: goto-symbol-1-below
+  "
+    ("1" avy-goto-symbol-1)
+    ("n" avy-goto-symbol-1-above)
+    ("p" avy-goto-symbol-1-below)
+    ("q" nil "quit"))
+
+  (defhydra hydra-avy-word (:color pink :hint nil)
+    "
+    _0_: goto-word-0       _P_: goto-word-1-above      _S_: goto-subword-1
+    _p_: goto-word-0-above _N_: goto-word-1-below
+    _n_: goto-word-0-below _f_: goto-word-or-subword-1
+    _1_: goto-word-1       _s_: goto-subword-0
+
+    _q_: quit
+  "
+    ("0" avy-goto-word-0)
+    ("p" avy-goto-word-0-above)
+    ("n" avy-goto-word-0-below)
+    ("1" avy-goto-word-1)
+    ("P" avy-goto-word-1-above)
+    ("N" avy-goto-word-1-below)
+    ("f" avy-goto-word-or-subword-1)
+    ("s" avy-goto-subword-0)
+    ("S" avy-goto-subword-1)
+    ("q" nil))
+
+  (global-set-key (kbd "C-c a") 'hydra-avy/body)
+#+END_SRC
+*** anzu
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-anzu (:color pink :hint nil)
+    "
+  _m_ anzu-mode: %`anzu-mode
+
+  _f_: replace-at-cursor-thing _c_: query-replace-at-cursor
+  _i_: isearch-query-replace   _t_: query-replace-at-cursor-thing
+  _r_: query-replace
+  _R_: query-replace-regexp
+
+  _q_: quit
+  "
+    ("m" anzu-mode)
+    ("f" anzu-replace-at-cursor-thing)
+    ("i" anzu-isearch-query-replace)
+    ("r" anzu-query-replace)
+    ("R" anzu-query-replace-regexp)
+    ("c" anzu-query-replace-at-cursor)
+    ("t" anzu-query-replace-at-cursor-thing)
+    ("q" nil))
+#+END_SRC
 *** help
 #+BEGIN_SRC emacs-lisp
   (defhydra hydra-help (:color blue :hint nil)
@@ -464,7 +572,7 @@ My hydras.
 #+END_SRC
 *** window
 #+BEGIN_SRC emacs-lisp
-  (defun hydra-window-find-file (arg)
+  (defun smart-find-file (arg)
     (interactive "P")
     (if (equal (projectile-project-type) nil)
         (helm-find-files arg)
@@ -472,10 +580,10 @@ My hydras.
 
   (defhydra hydra-window (:color red :hint nil)
     "
-  _o_: ace-window          _0_: delete-window        _h_: windmove-left  _F_: toggle-frame-fullscreen
+  _o_: ace-window          _0_: delete-window        _h_: windmove-left  _F_: toggle-frame-fullscreen _o_: find-file
   _d_: ace-delete-window   _1_: delete-other-windows _l_: windmove-right _b_: ido-switch-buffer
   _i_: ace-maximize-window _2_: split-window-below   _j_: windmove-down  _p_: helm-projectile
-  _s_: ace-swap-window     _3_: split-window-right   _k_: windmove-up    _f_: find-file
+  _s_: ace-swap-window     _3_: split-window-right   _k_: windmove-up    _f_: smart-find-file
 
   _q_: quit
   "
@@ -500,7 +608,8 @@ My hydras.
     ("F" toggle-frame-fullscreen)
     ("b" ido-switch-buffer)
     ("p" helm-projectile)
-    ("f" hydra-window-find-file)
+    ("f" smart-find-file)
+    ("o" helm-find-files)
     ("q" nil))
 
   (global-set-key (kbd "C-c w") 'hydra-window/body)
@@ -550,7 +659,7 @@ My hydras.
 
   (defhydra hydra-region (:color pink :hint nil)
     "
-  _f_: forward-word  _n_: next-line          _=_: expand-region     _<_: beginning-of-buffer
+  _f_: forward-word  _n_: next-line          _=_: expand-region     _<_: beginning-of-buffer _;_: comment-line
   _b_: backward-word _p_: previous-line      _-_: contract-region   _>_: end-of-buffer
   _F_: forward-sexp  _N_: forward-paragraph  _e_: end-of-line       _w_: copy
   _B_: backward-sexp _P_: backward-paragraph _a_: beginning-of-line _k_: kill
@@ -579,6 +688,7 @@ My hydras.
     ("L" hydra-move-dup/body :color blue)
     ("S" replace-string :color blue)
     ("R" replace-regexp :color blue)
+    (";" comment-line)
     ("q" nil))
 
   (global-set-key (kbd "C-SPC") 'hydra-set-mark)
@@ -609,10 +719,32 @@ My hydras.
   (whitespace-mode)
   (global-set-key (kbd "C-c t") 'hydra-toggle/body)
 #+END_SRC
+*** search-and-replace
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-search-and-replace (:color blue :hint nil)
+    "
+    _a_: anzu           _r_: vr/replace
+    _d_: deadgrep       _R_: vr/query-replace
+    _i_: symbol-overlay
+    _e_: iedit
+
+    _q_: quit
+    "
+    ("a" hydra-anzu/body)
+    ("d" deadgrep)
+    ("i" symbol-overlay-put)
+    ("e" iedit-mode)
+    ("r" vr/replace)
+    ("R" vr/query-replace)
+    ("q" nil))
+
+  (global-set-key (kbd "C-c s") 'hydra-search-and-replace/body)
+#+END_SRC
 *** multiple-cursors
 #+BEGIN_SRC emacs-lisp
   (defhydra hydra-multiple-cursors (:color pink)
     "Multiple Cursors"
+    ("a" mc/mark-all-like-this-dwim "mark-all")
     ("n" mc/mark-next-like-this "mark-next")
     ("p" mc/unmark-next-like-this "unmark-next")
     ("q" nil "quit"))
@@ -645,6 +777,13 @@ My hydras.
   (bind-key "C-M-o" 'indent-and-open-newline)
 #+END_SRC
 ** Packages
+*** [[https://github.com/syohex/emacs-anzu][anzu]]
+#+BEGIN_SRC emacs-lisp
+  (use-package anzu
+    :ensure t
+    :config
+    (global-anzu-mode))
+#+END_SRC
 *** [[https://github.com/abo-abo/avy][avy]]
 ~avy~ provides a nice jump-to-char mechanic which is
 useful for hopping around buffers.
@@ -707,6 +846,34 @@ quick text replacement after grepping in a file or project.
   (use-package wgrep
     :ensure t
     :config (setq wgrep-auto-save-buffer t))
+#+END_SRC
+*** [[https://github.com/wolray/symbol-overlay][symbol-overlay]]
+Install ~symbol-overlay~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package symbol-overlay
+    :ensure t
+    :bind
+    ("M-i" . 'symbol-overlay-put)
+    ("M-n" . 'symbol-overlay-switch-forward)
+    ("M-p" . 'symbol-overlay-switch-backward)
+    ("M-I" . 'symbol-overlay-remove-all))
+#+END_SRC
+*** [[https://github.com/benma/visual-regexp.el][visual-regexp]]
+
+#+BEGIN_SRC emacs-lisp
+  (use-package visual-regexp
+    :ensure t)
+#+END_SRC
+*** [[https://github.com/tsdh/iedit][iedit]]
+#+BEGIN_SRC emacs-lisp
+  (use-package iedit
+    :ensure t)
+#+END_SRC
+*** [[https://github.com/Wilfred/deadgrep][deadgrep]]
+#+BEGIN_SRC emacs-lisp
+  (use-package deadgrep
+    :ensure t)
 #+END_SRC
 * Project Management
 ** Packages

@@ -389,6 +389,12 @@ Install ~helm-ag~ for use with ~ag~ ([[https://github.com/ggreer/the_silver_sear
     :ensure t
     :after (helm))
 #+END_SRC
+*** [[https://github.com/ShingoFukuyama/helm-swoop][helm-swoop]]
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-swoop
+    :ensure t
+    :bind ("M-S" . 'helm-swoop))
+#+END_SRC
 *** [[https://github.com/abo-abo/swiper][swiper]]
 ~swiper~ is a powerful replacement for the built-in
 ~isearch~, which allows for fuzzy and regexp searching

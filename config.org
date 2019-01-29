@@ -431,7 +431,7 @@ My hydras.
     _a_: ag              _p_: ag-project-root
     _A_: do-ag           _P_: do-ag-project-root
     _f_: ag-this-file    _b_: ag-buffers
-    _F_: do-ag-this-file
+    _F_: do-ag-this-file _B_: do-ag-buffers
   "
     ("a" helm-ag)
     ("A" helm-do-ag)
@@ -439,7 +439,8 @@ My hydras.
     ("F" helm-do-ag-this-file)
     ("p" helm-ag-project-root)
     ("P" helm-do-ag-project-root)
-    ("b" helm-ag-buffers))
+    ("b" helm-ag-buffers)
+    ("B" helm-do-ag-buffers))
 
   (global-set-key (kbd "C-c a") 'hydra-ag/body)
 #+END_SRC

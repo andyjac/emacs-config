@@ -363,6 +363,7 @@ Install and configure ~helm~.
     ("C-x C-f" . helm-find-files)
     ("C-x C-b" . helm-buffers-list)
     ("M-x" . helm-M-x)
+    ("C-S-y" . helm-show-kill-ring)
     :config
     (setq helm-split-window-in-side-p nil
           helm-autoresize-max-height 0
@@ -376,18 +377,19 @@ Install and configure ~helm~.
     :init
     (helm-mode 1)
     (helm-autoresize-mode 1)
-    :bind
-    (:map helm-find-files-map
-          ("C-b" . helm-find-files-up-one-level)
-          ("C-f" . helm-execute-persistent-action)))
+    :bind (:map helm-map
+                ("C-b" . helm-find-files-up-one-level)
+                ("C-f" . helm-execute-persistent-action)))
 #+END_SRC
-
+*** [[https://github.com/syohex/emacs-helm-ag][helm-ag]]
 Install ~helm-ag~ for use with ~ag~ ([[https://github.com/ggreer/the_silver_searcher][the silerver searcher]]).
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm-ag
     :ensure t
-    :after (helm))
+    :after (helm)
+    :config
+    (setq helm-ag-fuzzy-match t))
 #+END_SRC
 *** [[https://github.com/ShingoFukuyama/helm-swoop][helm-swoop]]
 #+BEGIN_SRC emacs-lisp
@@ -422,6 +424,25 @@ Install ~hydra~ package.
 ** hydras
 My hydras.
 
+*** ag
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-ag (:color blue :hint nil)
+    "
+    _a_: ag              _p_: ag-project-root
+    _A_: do-ag           _P_: do-ag-project-root
+    _f_: ag-this-file    _b_: ag-buffers
+    _F_: do-ag-this-file
+  "
+    ("a" helm-ag)
+    ("A" helm-do-ag)
+    ("f" helm-ag-this-file)
+    ("F" helm-do-ag-this-file)
+    ("p" helm-ag-project-root)
+    ("P" helm-do-ag-project-root)
+    ("b" helm-ag-buffers))
+
+  (global-set-key (kbd "C-c a") 'hydra-ag/body)
+#+END_SRC
 *** avy
 #+BEGIN_SRC emacs-lisp
   (defhydra hydra-avy (:color blue :hint nil)
@@ -506,7 +527,7 @@ My hydras.
     ("S" avy-goto-subword-1)
     ("q" nil))
 
-  (global-set-key (kbd "C-c a") 'hydra-avy/body)
+  (global-set-key (kbd "C-c v") 'hydra-avy/body)
 #+END_SRC
 *** anzu
 #+BEGIN_SRC emacs-lisp
@@ -535,7 +556,7 @@ My hydras.
   (defhydra hydra-help (:color blue :hint nil)
     "
   _m_: man           _c_: command     _f_: function
-  _a_: apropos       _l_: library
+  _a_: apropos       _l_: library     _i_: info
   _d_: documentation _u_: user-option
   _v_: variable      _e_: value
 
@@ -550,6 +571,7 @@ My hydras.
     ("u" apropos-user-option)
     ("e" apropos-value)
     ("f" describe-function)
+    ("i" helm-info)
     ("q" nil))
 
   (global-set-key (kbd "C-c h") 'hydra-help/body)
@@ -586,7 +608,7 @@ My hydras.
 
   (defhydra hydra-window (:color red :hint nil)
     "
-  _o_: ace-window          _0_: delete-window        _h_: windmove-left  _F_: toggle-frame-fullscreen _o_: find-file
+  _o_: ace-window          _0_: delete-window        _h_: windmove-left  _t_: toggle-frame-fullscreen _F_: find-file
   _d_: ace-delete-window   _1_: delete-other-windows _l_: windmove-right _b_: ido-switch-buffer
   _i_: ace-maximize-window _2_: split-window-below   _j_: windmove-down  _p_: helm-projectile
   _s_: ace-swap-window     _3_: split-window-right   _k_: windmove-up    _f_: smart-find-file
@@ -611,11 +633,11 @@ My hydras.
     ("l" windmove-right)
     ("j" windmove-down)
     ("k" windmove-up)
-    ("F" toggle-frame-fullscreen)
+    ("t" toggle-frame-fullscreen)
     ("b" ido-switch-buffer)
     ("p" helm-projectile)
     ("f" smart-find-file)
-    ("o" helm-find-files)
+    ("F" helm-find-files)
     ("q" nil))
 
   (global-set-key (kbd "C-c w") 'hydra-window/body)
@@ -755,7 +777,7 @@ My hydras.
     ("p" mc/unmark-next-like-this "unmark-next")
     ("q" nil "quit"))
 
-  (global-set-key (kbd "C-c m") 'hydra-multiple-cursors/body)
+  ;; (global-set-key (kbd "C-c m") 'hydra-multiple-cursors/body)
 #+END_SRC
 * Text Editing
 ** Functions
@@ -858,12 +880,7 @@ Install ~symbol-overlay~.
 
 #+BEGIN_SRC emacs-lisp
   (use-package symbol-overlay
-    :ensure t
-    :bind
-    ("M-i" . 'symbol-overlay-put)
-    ("M-n" . 'symbol-overlay-switch-forward)
-    ("M-p" . 'symbol-overlay-switch-backward)
-    ("M-I" . 'symbol-overlay-remove-all))
+    :ensure t)
 #+END_SRC
 *** [[https://github.com/benma/visual-regexp.el][visual-regexp]]
 
@@ -880,6 +897,12 @@ Install ~symbol-overlay~.
 #+BEGIN_SRC emacs-lisp
   (use-package deadgrep
     :ensure t)
+#+END_SRC
+*** [[https://github.com/mickeynp/smart-scan][smartscan]]
+#+BEGIN_SRC emacs-lisp
+  (use-package smartscan
+    :ensure t
+    :config (global-smartscan-mode t))
 #+END_SRC
 * Project Management
 ** Packages
@@ -937,21 +960,46 @@ in time for the git history of a specific file.
 #+END_SRC
 *** rainbow-mode
 #+BEGIN_SRC emacs-lisp
-  ;; (define-globalized-minor-mode global-rainbow-mode rainbow-mode
-  ;;   (lambda () (rainbow-mode 1)))
-
-  (defun aj/hook--prog-mode ()
-    "hook for `prog-mode'"
-    ;; turn on `rainbow-mode'
-    (message "enabling rainbow-mode...")
-    (rainbow-mode 1))
-
   (use-package rainbow-mode
     :ensure t
     :hook
-    (prog-mode-hook . aj/hook--prog-mode)
+    (prog-mode-hook . rainbow-mode)
     (org-mode-hook . rainbow-mode)
     (lisp-interaction-mode-hook . rainbow-mode))
+#+END_SRC
+*** [[https://github.com/kyagi/shell-pop-el][shell-pop]]
+#+BEGIN_SRC emacs-lisp
+  (use-package shell-pop
+    :ensure t
+    :bind (("C-." . shell-pop))
+    :config
+    (setq shell-pop-shell-type
+          (quote ("ansi-term" "*ansi-term*"
+                  (lambda nil (ansi-term shell-pop-term-shell)))))
+    (setq shell-pop-term-shell "/bin/zsh")
+    ;; need to do this manually or not picked up by `shell-pop'
+    (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
+#+END_SRC
+*** [[https://github.com/pashky/restclient.el][restclient]]
+#+BEGIN_SRC emacs-lisp
+  (use-package restclient
+    :ensure
+    :mode (("\\.http\\'" . restclient-mode)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (defvar http-buffer "*http*")
+  (defvar initial-http-message "# -*- restclient -*-\n#\n\n")
+
+  (defun aj/get-http-buffer-create ()
+    (interactive)
+    (let ((buf (get-buffer http-buffer)))
+      (if (null buf)
+          (progn
+            (switch-to-buffer-other-window http-buffer)
+            (restclient-mode)
+            (insert initial-http-message))
+        (switch-to-buffer-other-window http-buffer))))
 #+END_SRC
 ** Snippets
 ** Completion
@@ -1093,3 +1141,51 @@ projects. Let's install and configure it now.
 #+BEGIN_SRC emacs-lisp
   (add-hook 'typescript-mode-hook 'company-mode)
 #+END_SRC
+*** Python
+**** Packages
+[[https://github.com/jorgenschaefer/elpy][elpy]]
+#+BEGIN_SRC emacs-lisp
+  (use-package elpy
+    :ensure t
+    :config (elpy-enable))
+#+END_SRC
+*** JavaScript
+**** Packages
+***** [[https://github.com/mooz/js2-mode][js2-mode]]
+#+BEGIN_SRC emacs-lisp
+  (use-package js2-mode
+    :ensure t
+    :mode (("\\.js\\'" . js2-mode)))
+#+END_SRC
+***** [[https://github.com/magnars/js2-refactor.el][js2-refactor]]
+#+BEGIN_SRC emacs-lisp
+  (use-package js2-refactor
+    :ensure t
+    :hook (js2-mode . js2-refactor-mode)
+    :config (js2r-add-keybindings-with-prefix "C-c C-r")
+    :bind (:map js2-mode-map
+                ("C-k" . 'js2r-kill)))
+#+END_SRC
+***** [[https://github.com/NicolasPetton/xref-js2][xref-js2]]
+#+BEGIN_SRC emacs-lisp
+  (use-package xref-js2
+    :ensure t
+    :bind (:map js2-mode-map
+                ("M-." . nil))
+    :hook (js2-mode
+           . (lambda ()
+               (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))))
+#+END_SRC
+**** Completion
+***** [[https://github.com/proofit404/company-tern][company-tern]]
+#+BEGIN_SRC emacs-lisp
+  (use-package company-tern
+    :ensure t
+    :hook (js2-mode .
+                    (lambda ()
+                      (add-to-list 'company-backends 'company-tern)
+                      (company-mode)
+                      (tern-mode))))
+#+END_SRC
+**** Linting
+**** Snippets

@@ -1000,6 +1000,18 @@ in time for the git history of a specific file.
             (insert initial-http-message))
         (switch-to-buffer-other-window http-buffer))))
 #+END_SRC
+** Functions
+*** shell
+Run a =zsh= instance.
+
+#+BEGIN_SRC emacs-lisp
+  (defun aj/zsh ()
+    "Run a `zsh' instance."
+    (interactive)
+    (ansi-term "/bin/zsh"))
+
+  (global-set-key (kbd "C-c .") 'aj/zsh)
+#+END_SRC
 ** Snippets
 ** Completion
 *** Company

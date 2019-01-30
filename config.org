@@ -645,20 +645,6 @@ My hydras.
 #+END_SRC
 *** move-dup
 #+BEGIN_SRC emacs-lisp
-  ;; (defun last-line? ()
-  ;;   "Returns t if the cursor is positioned on the last
-  ;; line of the currently selected buffer. Otherwise returns nil."
-  ;;   (interactive)
-  ;;   (save-excursion
-  ;;     (let ((current-pos (point)) end-pos)
-  ;;       (forward-page)
-  ;;       (end-of-line)
-  ;;       (or (looking-at page-delimiter)
-  ;;           (end-of-line))
-  ;;       (setq end-pos (point))
-  ;;       (message "current-pos: %d, end-pos: %d" current-pos end-pos)
-  ;;       (eq current-pos end-pos))))
-
   (defhydra hydra-move-dup (:color pink)
     "Move/Dup"
     ("k" md/move-lines-up "move-up")

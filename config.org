@@ -719,6 +719,9 @@ My hydras.
     _t_ truncate-lines:    %`truncate-lines
     _w_ whitespace-mode:   %`whitespace-mode
     _l_ org link display:  %`org-descriptive-links
+    _r_ rainbow-mode:      %`rainbow-mode
+
+    _q_: quit
     "
     ("a" abbrev-mode)
     ("d" toggle-debug-on-error)
@@ -727,11 +730,15 @@ My hydras.
     ("t" toggle-truncate-lines)
     ("w" whitespace-mode)
     ("l" org-toggle-link-display)
-    ("q" nil "quit"))
+    ("r" rainbow-mode)
+    ("q" nil))
 
   ;; toggle `whitespace-mode' to inhibit first run error
   (whitespace-mode)
   (whitespace-mode)
+  ;; toggle `rainbow-mode' to inhibit first run error
+  (rainbow-mode)
+  (rainbow-mode)
   (global-set-key (kbd "C-c t") 'hydra-toggle/body)
 #+END_SRC
 *** search-and-replace

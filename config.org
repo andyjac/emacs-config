@@ -1053,7 +1053,8 @@ Elixir. Let's install it now.
 
 #+BEGIN_SRC emacs-lisp
   (use-package alchemist
-    :ensure t)
+    :ensure t
+    :init (setq alchemist-key-command-prefix (kbd "C-c ,")))
 #+END_SRC
 **** Hooks
 #+BEGIN_SRC emacs-lisp

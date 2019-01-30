@@ -957,9 +957,14 @@ in time for the git history of a specific file.
   (use-package rainbow-mode
     :ensure t
     :hook
-    (prog-mode-hook . rainbow-mode)
-    (org-mode-hook . rainbow-mode)
-    (lisp-interaction-mode-hook . rainbow-mode))
+    ((prog-mode org-mode lisp-interaction-mode) . rainbow-mode))
+#+END_SRC
+*** [[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]]
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook
+    ((lisp-mode emacs-lisp-mode lisp-interaction-mode org-mode) . rainbow-delimiters-mode))
 #+END_SRC
 *** [[https://github.com/kyagi/shell-pop-el][shell-pop]]
 #+BEGIN_SRC emacs-lisp

@@ -247,7 +247,7 @@ Kill the currently focused buffer.
       (interactive)
       (kill-buffer (current-buffer)))
 
-  (bind-key "C-x C-k"    'kill-focused-buffer)
+  (bind-key "C-x C-k" 'kill-focused-buffer)
 #+END_SRC
 *** toggle-window-split
 Toggles the direction in which windows are split (horizontal/vertical).
@@ -308,10 +308,10 @@ Rotates the windows inside the current frame in a counter-clockwise direction.
   (use-package ace-window
     :ensure t
     :config
-    (set-face-attribute
-     'aw-background-face nil :foreground "gray40")
-    (set-face-attribute
-     'aw-leading-char-face nil :height 200)
+    ;; (set-face-attribute
+    ;;  'aw-background-face nil :foreground "gray40")
+    ;; (set-face-attribute
+    ;;  'aw-leading-char-face nil :height 200)
     ;; i prefer keys on the home row to the default 0-9
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
     :bind ("M-o" . ace-window))
@@ -341,8 +341,7 @@ Let's install it and configure a keybinding for it.
     :bind (:map dired-mode-map ("e" . 'dired-efap)))
 #+END_SRC
 * Navigation & Discoverability
-** Packages
-*** [[https://github.com/justbur/emacs-which-key][which-key]]
+** [[https://github.com/justbur/emacs-which-key][which-key]]
 ~which-key~ allows for incremental keystroke discoverability.
 It's a great way to manage all of Emac's keybindings without
 having to remember them all! Let's install it and turn it on
@@ -353,51 +352,7 @@ globally.
     :ensure t
     :config (which-key-mode 1))
 #+END_SRC
-*** [[https://github.com/emacs-helm/helm][helm]]
-Install and configure ~helm~.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package helm
-    :ensure t
-    :bind
-    ("C-x C-f" . helm-find-files)
-    ("C-x C-b" . helm-buffers-list)
-    ("M-x" . helm-M-x)
-    ("C-S-y" . helm-show-kill-ring)
-    :config
-    (setq helm-split-window-in-side-p nil
-          helm-autoresize-max-height 0
-          helm-autoresize-min-height 40
-          helm-M-x-fuzzy-match t
-          helm-buffers-fuzzy-matching t
-          helm-recentf-fuzzy-match t
-          helm-semantic-fuzzy-match t
-          helm-imenu-fuzzy-match t
-          helm-echo-input-in-header-line t)
-    :init
-    (helm-mode 1)
-    (helm-autoresize-mode 1)
-    :bind (:map helm-map
-                ("C-b" . helm-find-files-up-one-level)
-                ("C-f" . helm-execute-persistent-action)))
-#+END_SRC
-*** [[https://github.com/syohex/emacs-helm-ag][helm-ag]]
-Install ~helm-ag~ for use with ~ag~ ([[https://github.com/ggreer/the_silver_searcher][the silerver searcher]]).
-
-#+BEGIN_SRC emacs-lisp
-  (use-package helm-ag
-    :ensure t
-    :after (helm)
-    :config
-    (setq helm-ag-fuzzy-match t))
-#+END_SRC
-*** [[https://github.com/ShingoFukuyama/helm-swoop][helm-swoop]]
-#+BEGIN_SRC emacs-lisp
-  (use-package helm-swoop
-    :ensure t
-    :bind ("M-S" . 'helm-swoop))
-#+END_SRC
-*** [[https://github.com/abo-abo/swiper][swiper]]
+** [[https://github.com/abo-abo/swiper][swiper]]
 ~swiper~ is a powerful replacement for the built-in
 ~isearch~, which allows for fuzzy and regexp searching
 in a buffer. Let's install and configure it.
@@ -405,14 +360,12 @@ in a buffer. Let's install and configure it.
 #+BEGIN_SRC emacs-lisp
   (use-package swiper
     :ensure t
-    :bind
-    (("C-s" . swiper)
-     ("C-r" . swiper)
-     :map swiper-map
-     ("C-*" . 'swiper-mc)
-     ("C-r" . 'swiper-query-replace))
-    :config
-    (setq ivy-height 15))
+    ;; :bind (("C-s" . swiper)
+    ;;        ("C-r" . swiper)
+    ;;        :map swiper-map
+    ;;        ("C-*" . 'swiper-mc)
+    ;;        ("C-r" . 'swiper-query-replace))
+    :config (setq ivy-height 15))
 #+END_SRC
 * [[https://github.com/abo-abo/hydra][Hydra]]
 Install ~hydra~ package.
@@ -442,7 +395,7 @@ My hydras.
     ("b" helm-ag-buffers)
     ("B" helm-do-ag-buffers))
 
-  (global-set-key (kbd "C-c a") 'hydra-ag/body)
+  (bind-key "C-c a" 'hydra-ag/body)
 #+END_SRC
 *** avy
 #+BEGIN_SRC emacs-lisp
@@ -528,7 +481,7 @@ My hydras.
     ("S" avy-goto-subword-1)
     ("q" nil))
 
-  (global-set-key (kbd "C-c v") 'hydra-avy/body)
+  (bind-key "C-c v" 'hydra-avy/body)
 #+END_SRC
 *** anzu
 #+BEGIN_SRC emacs-lisp
@@ -575,7 +528,7 @@ My hydras.
     ("i" helm-info)
     ("q" nil))
 
-  (global-set-key (kbd "C-c h") 'hydra-help/body)
+  (bind-key "C-c h" 'hydra-help/body)
 #+END_SRC
 *** git
 #+BEGIN_SRC emacs-lisp
@@ -597,7 +550,7 @@ My hydras.
     ("t" git-timemachine)
     ("q" nil))
 
-  (global-set-key (kbd "C-c g") 'hydra-git/body)
+  (bind-key "C-c g" 'hydra-git/body)
 #+END_SRC
 *** window
 #+BEGIN_SRC emacs-lisp
@@ -641,7 +594,7 @@ My hydras.
     ("F" helm-find-files)
     ("q" nil))
 
-  (global-set-key (kbd "C-c w") 'hydra-window/body)
+  (bind-key "C-c w" 'hydra-window/body)
 #+END_SRC
 *** move-dup
 #+BEGIN_SRC emacs-lisp
@@ -653,7 +606,7 @@ My hydras.
     ("n" md/duplicate-down "dup-down")
     ("q" nil "quit"))
 
-  (global-set-key (kbd "C-c l") 'hydra-move-dup/body)
+  (bind-key "C-c l" 'hydra-move-dup/body)
 #+END_SRC
 *** selection
 #+BEGIN_SRC emacs-lisp
@@ -706,7 +659,7 @@ My hydras.
     (";" comment-line)
     ("q" nil))
 
-  (global-set-key (kbd "C-SPC") 'hydra-set-mark)
+  (bind-key "C-SPC" 'hydra-set-mark)
 #+END_SRC
 *** toggle
 #+BEGIN_SRC emacs-lisp
@@ -737,9 +690,9 @@ My hydras.
   (whitespace-mode)
   (whitespace-mode)
   ;; toggle `rainbow-mode' to inhibit first run error
-  (rainbow-mode)
-  (rainbow-mode)
-  (global-set-key (kbd "C-c t") 'hydra-toggle/body)
+  ;; (rainbow-mode)
+  ;; (rainbow-mode)
+  (bind-key "C-c t" 'hydra-toggle/body)
 #+END_SRC
 *** search-and-replace
 #+BEGIN_SRC emacs-lisp
@@ -750,6 +703,11 @@ My hydras.
     _i_: symbol-overlay
     _e_: iedit
 
+    _s_: swoop-all
+    _p_: swoop-projectile
+    _m_: swoop-mode
+    _b_: swoop-buffers
+
     _q_: quit
     "
     ("a" hydra-anzu/body)
@@ -758,9 +716,13 @@ My hydras.
     ("e" iedit-mode)
     ("r" vr/replace)
     ("R" vr/query-replace)
+    ("s" helm-multi-swoop-all)
+    ("p" helm-multi-swoop-projectile)
+    ("m" helm-multi-swoop-current-mode)
+    ("b" helm-multi-swoop)
     ("q" nil))
 
-  (global-set-key (kbd "C-c s") 'hydra-search-and-replace/body)
+  (bind-key "C-c s" 'hydra-search-and-replace/body)
 #+END_SRC
 *** multiple-cursors
 #+BEGIN_SRC emacs-lisp
@@ -771,7 +733,7 @@ My hydras.
     ("p" mc/unmark-next-like-this "unmark-next")
     ("q" nil "quit"))
 
-  ;; (global-set-key (kbd "C-c m") 'hydra-multiple-cursors/body)
+  ;; (bind-key "C-c m" 'hydra-multiple-cursors/body)
 #+END_SRC
 * Text Editing
 ** Functions
@@ -783,6 +745,16 @@ My hydras.
       (indent-and-open-newline t))
 
   (bind-key "C-o" 'previous-indent-and-open-newline)
+#+END_SRC
+*** indent-buffer
+#+BEGIN_SRC emacs-lisp
+  (defun indent-buffer ()
+    "Fix indentation on the entire buffer."
+    (interactive)
+    (save-excursion
+      (indent-region (point-min) (point-max))))
+
+  (bind-key "C-c i" 'indent-buffer)
 #+END_SRC
 *** indent-and-open-newline
 #+BEGIN_SRC emacs-lisp
@@ -942,7 +914,105 @@ in time for the git history of a specific file.
   (use-package git-timemachine
     :ensure t)
 #+END_SRC
+* Helm
+** [[https://github.com/emacs-helm/helm][helm]]
+Install and configure ~helm~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm
+    :ensure t
+    :bind
+    ("C-x C-f" . helm-find-files)
+    ("C-x C-b" . helm-buffers-list)
+    ("M-x" . helm-M-x)
+    ("C-S-y" . helm-show-kill-ring)
+    :config
+    (setq helm-split-window-in-side-p nil
+          helm-autoresize-max-height 0
+          helm-autoresize-min-height 40
+          helm-M-x-fuzzy-match t
+          helm-buffers-fuzzy-matching t
+          helm-recentf-fuzzy-match t
+          helm-semantic-fuzzy-match t
+          helm-imenu-fuzzy-match t
+          helm-echo-input-in-header-line t)
+    :init
+    (helm-mode 1)
+    (helm-autoresize-mode 1)
+    :bind (:map helm-map
+                ("C-b" . helm-find-files-up-one-level)
+                ("C-f" . helm-execute-persistent-action)))
+#+END_SRC
+** [[https://github.com/syohex/emacs-helm-ag][helm-ag]]
+Install ~helm-ag~ for use with ~ag~ ([[https://github.com/ggreer/the_silver_searcher][the silerver searcher]]).
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-ag
+    :ensure t
+    :after (helm)
+    :config
+    (setq helm-ag-fuzzy-match t))
+#+END_SRC
+** [[https://github.com/ShingoFukuyama/helm-swoop][helm-swoop]]
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-swoop
+    :ensure t
+    :bind
+    ("C-s" . 'helm-swoop)
+    ("C-r" . 'helm-swoop))
+#+END_SRC
+** [[https://github.com/masasam/emacs-helm-tramp][helm-tramp]]
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-tramp
+    :ensure t
+    :bind ("C-c c" . helm-tramp))
+#+END_SRC
+* Docker
+** Packages
+*** [[https://github.com/Silex/docker.el][docker]]
+#+BEGIN_SRC emacs-lisp
+  (use-package docker
+    :ensure t
+    :bind ("C-c d" . docker))
+#+END_SRC
+*** [[https://github.com/spotify/dockerfile-mode][dockerfile-mode]]
+#+BEGIN_SRC emacs-lisp
+  (use-package dockerfile-mode
+    :ensure t
+    :mode (("Dockerfile\\'" . dockerfile-mode)))
+#+END_SRC
+*** [[https://github.com/emacs-pe/docker-tramp.el][docker-tramp]]
+#+BEGIN_SRC emacs-lisp
+  (use-package docker-tramp
+    :ensure t)
+#+END_SRC
 * Programming
+** LSP
+*** [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
+Install and configure ~lsp-mode~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :commands lsp
+    :config (setq lsp-prefer-flymake nil))
+#+END_SRC
+*** [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]]
+Install and configure ~lsp-ui~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-ui
+    :ensure t
+    :after (lsp)
+    :commands lsp-ui-mode
+    :hook (lsp-mode . lsp-ui-mode)
+    :config
+    (setq lsp-ui-doc-enable nil
+          lsp-ui-peek-enable nil
+          lsp-ui-sideline-enable nil
+          lsp-ui-imenu-enable nil
+          lsp-ui-flycheck-enable t))
+#+END_SRC
 ** General
 *** [[https://github.com/Fuco1/smartparens][smartparens]]
 #+BEGIN_SRC emacs-lisp
@@ -957,7 +1027,7 @@ in time for the git history of a specific file.
   (use-package rainbow-mode
     :ensure t
     :hook
-    ((prog-mode org-mode lisp-interaction-mode) . rainbow-mode))
+    ((org-mode lisp-interaction-mode) . rainbow-mode))
 #+END_SRC
 *** [[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]]
 #+BEGIN_SRC emacs-lisp
@@ -1010,7 +1080,7 @@ Run a =zsh= instance.
     (interactive)
     (ansi-term "/bin/zsh"))
 
-  (global-set-key (kbd "C-c .") 'aj/zsh)
+  (bind-key "C-c ." 'aj/zsh)
 #+END_SRC
 ** Snippets
 ** Completion
@@ -1045,6 +1115,77 @@ Install ~flycheck~.
     :ensure t)
 #+END_SRC
 ** Languages
+*** C/C++
+Basic configuration.
+
+#+BEGIN_SRC emacs-lisp
+  (setq c-basic-offset 4)
+  (c-set-offset 'substatement-open 0)
+  (c-set-offset 'arglist-intro '+)
+  (c-set-offset 'arglist-close 0)
+#+END_SRC
+
+**** cquery
+Install the [[https://github.com/cquery-project/cquery][cquery]] C/C++/Objective-C language server.
+
+#+BEGIN_SRC shell
+  git clone --recursive https://github.com/cquery-project/cquery.git
+  cd cquery
+  git submodule update --init
+  mkdir build && cd build
+  cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=release -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
+  cmake --build .
+  cmake --build . --target install
+#+END_SRC
+
+Install and configure [[https://github.com/cquery-project/emacs-cquery][emacs-cquery]], an Emacs client application
+for the ~cquery~ language server.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package cquery
+    :ensure t
+    :config
+    (setq cquery-executable "/usr/local/bin/cquery")
+    (setq cquery-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack")))
+
+  (add-hook 'c-mode-hook #'lsp)
+  (add-hook 'c++-mode-hook #'lsp)
+#+END_SRC
+**** [[https://github.com/brotzeit/helm-xref][helm-xref]]
+Install and configure ~helm-xref~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-xref
+    :ensure t
+    :config
+    (setq xref-show-xrefs-function 'helm-xref-show-xrefs))
+#+END_SRC
+**** helm-gtags
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package helm-gtags
+  ;;   :ensure t
+  ;;   :config
+  ;;   (setq helm-gtags-ignore-case t)
+  ;;   (setq helm-gtags-auto-update t)
+  ;;   (setq helm-gtags-use-input-at-cursor t)
+  ;;   (setq helm-gtags-pulse-at-cursor t)
+  ;;   (setq helm-gtags-prefix-key "\C-cj")
+  ;;   (setq helm-gtags-suggested-key-mapping t)
+  ;;   :hook
+  ;;   (dired-mode . helm-gtags-mode)
+  ;;   (eshell-mode . helm-gtags-mode)
+  ;;   (c-mode . helm-gtags-mode)
+  ;;   (c++-mode . helm-gtags-mode)
+  ;;   (asm-mode . helm-gtags-mode)
+  ;;   :bind (:map helm-gtags-mode-map
+  ;;               ("C-c j a" . helm-gtags-tags-in-this-function)
+  ;;               ("C-c j j" . helm-gtags-select)
+  ;;               ("M-." . helm-gtags-dwim)
+  ;;               ("M-," . helm-gtags-pop-stack)
+  ;;               ("C-c <" . helm-gtags-previous-history)
+  ;;               ("C-c >" . helm-gtags-next-history)))
+#+END_SRC
 *** Elixir
 **** Packages
 ***** [[https://github.com/tonini/alchemist.el][alchemist]]

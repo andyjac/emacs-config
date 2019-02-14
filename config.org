@@ -1356,3 +1356,66 @@ Install and configure ~rjsx-mode~.
 #+END_SRC
 **** Linting
 **** Snippets
+*** Markup
+Install ~yaml-mode~ for .ya?ml files
+
+#+BEGIN_SRC emacs-lisp
+  (use-package yaml-mode
+    :ensure t)
+#+END_SRC
+*** Go
+Install and configure ~go-mode~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package go-mode
+    :ensure t
+    :hook
+    (go-mode
+     . (lambda ()
+         (add-hook 'before-save-hook 'gofmt-before-save)
+         (setq gofmt-command "goimports")
+         (if (not (string-match "go" compile-command))
+             (set (make-local-variable 'compile-command)
+                  "go build -v && go test -v && go vet"))))
+    :bind (:map go-mode-map
+                ("C-c C-c" . compile)
+                ("C-c C-p" . recompile)
+                ("M-]" . next-error)
+                ("M-[" . previous-error)))
+#+END_SRC
+
+Install and configure ~go-eldoc~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package go-eldoc
+    :ensure t
+    :after (go-mode)
+    :hook (go-mode . go-eldoc-setup))
+#+END_SRC
+
+Install and configure ~company-go~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company-go
+    :ensure t
+    :after (go-mode)
+    :hook
+    (go-mode
+     . (lambda ()
+         (add-to-list 'company-backends 'company-go)
+         (company-mode 1))))
+#+END_SRC
+
+Install and configure ~go-guru~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package go-guru
+    :ensure t
+    :bind (:map go-mode-map
+                ("M-." . go-guru-definition)
+                ("M-," . pop-tag-mark))
+    :hook (go-mode
+           . (lambda ()
+               (require 'go-guru)
+               (go-guru-hl-identifier-mode 1))))
+#+END_SRC

@@ -1226,7 +1226,8 @@ it for lisp languages.
     :bind
     (:map lispy-mode-map
           ("`" . 'self-insert-command)
-          ("M-o" . 'ace-window)))
+          ("M-o" . 'ace-window)
+          ("M-n" . nil)))
 #+END_SRC
 **** [[https://github.com/slime/slime][slime]]
 *(S)uperior (L)isp (I)nteraction (M)ode for (E)macs* is a

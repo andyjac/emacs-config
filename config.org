@@ -1309,6 +1309,8 @@ projects. Let's install and configure it now.
 #+BEGIN_SRC emacs-lisp
   (use-package js2-mode
     :ensure t
+    :config
+    (setq js-indent-level 2)
     :mode (("\\.js\\'" . js2-mode)))
 #+END_SRC
 ***** [[https://github.com/magnars/js2-refactor.el][js2-refactor]]

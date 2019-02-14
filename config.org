@@ -1332,6 +1332,17 @@ projects. Let's install and configure it now.
            . (lambda ()
                (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))))
 #+END_SRC
+***** [[https://github.com/felipeochoa/rjsx-mode/][rjsx-mode]]
+Install and configure ~rjsx-mode~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package rjsx-mode
+    :ensure t
+    :after (js2-mode)
+    :mode
+    (("\\.js\\'" . rjsx-mode)
+     ("\\.jsx\\'" . rjsx-mode)))
+#+END_SRC
 **** Completion
 ***** [[https://github.com/proofit404/company-tern][company-tern]]
 #+BEGIN_SRC emacs-lisp

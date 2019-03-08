@@ -91,6 +91,17 @@ am replacing it with =dashboard= later anyway.
   (setq inhibit-startup-message t)
 #+END_SRC
 ** Function
+*** Force Save
+Force emacs to save the current buffer even when it has not been modified.
+
+#+BEGIN_SRC emacs-lisp
+  (defun aj/force-save ()
+    (interactive)
+    (not-modified 1)
+    (save-buffer))
+
+  (bind-key "C-x C-s" 'aj/force-save)
+#+END_SRC
 *** Require newline at EOF
 Add a newline to the end of a file on save.
 
@@ -157,6 +168,10 @@ Setup ~load-path~.
 *** Use line wrapping
 #+BEGIN_SRC emacs-lisp
   (global-visual-line-mode 1)
+#+END_SRC
+*** Make C-k kill the whole line
+#+BEGIN_SRC emacs-lisp
+  (bind-key [remap kill-line] 'kill-whole-line)
 #+END_SRC
 * Theme
 The most important piece of any editor configuration: A good dark theme.
@@ -870,6 +885,13 @@ Install ~symbol-overlay~.
     :ensure t
     :config (global-smartscan-mode t))
 #+END_SRC
+*** smart-indent-rigidly
+#+BEGIN_SRC emacs-lisp
+  (use-package smart-indent-rigidly
+    :ensure t
+    :bind (("<C-tab>" . smart-rigid-indent)
+           ("<backtab>" . smart-rigid-unindent)))
+#+END_SRC
 * Project Management
 ** Packages
 *** [[https://github.com/bbatsov/projectile][projectile]]
@@ -1202,7 +1224,7 @@ Elixir. Let's install it now.
   (add-hook
    'elixir-mode-hook
    (lambda ()
-     (add-hook 'before-save-hook 'elixir-format)))
+     (add-hook 'before-save-hook 'elixir-format nil t)))
 #+END_SRC
 **** Completion
 Enable ~company-mode~ for all Elixir modes.
@@ -1366,6 +1388,13 @@ Install ~yaml-mode~ for .ya?ml files
 *** Go
 Install and configure ~go-mode~.
 
+To use this setup with ~goimports~ we will need to install it
+as well.
+
+#+BEGIN_SRC bash
+  go get golang.org/x/tools/cmd/goimports
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
   (use-package go-mode
     :ensure t
@@ -1395,6 +1424,13 @@ Install and configure ~go-eldoc~.
 
 Install and configure ~company-go~.
 
+~company-go~ uses [[https://github.com/nsf/gocode][gocode]] for completion, so let's
+install that first.
+
+#+BEGIN_SRC shell
+  go get -u github.com/nsf/gocode
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
   (use-package company-go
     :ensure t
@@ -1408,6 +1444,12 @@ Install and configure ~company-go~.
 
 Install and configure ~go-guru~.
 
+We will also need to install the ~guru~ golang package.
+
+#+BEGIN_SRC bash
+  go get golang.org/x/tools/cmd/guru
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
   (use-package go-guru
     :ensure t
@@ -1418,4 +1460,51 @@ Install and configure ~go-guru~.
            . (lambda ()
                (require 'go-guru)
                (go-guru-hl-identifier-mode 1))))
+#+END_SRC
+*** CSS
+Configure ~css-mode~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package css-mode
+    :config
+    (setq css-indent-offset 2)
+    (company-mode 1))
+#+END_SRC
+*** Web
+**** web-mode
+Install and configure ~web-mode~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package web-mode
+    :ensure t
+    :mode (("\\.tsx\\'" . web-mode))
+    :hook
+    (web-mode
+     . (lambda ()
+         (when (string-equal "tsx" (file-name-extension buffer-file-name))
+           (if (equal web-mode-content-type "javascript")
+               (web-mode-set-content-type "jsx"))
+           (tide-setup)
+           (flycheck-mode 1)
+           (setq flycheck-check-syntax-automatically '(save mode-enabled))
+           (tide-hl-identifier-mode 1)
+           (eldoc-mode 1)
+           (company-mode 1)
+           (flycheck-add-mode 'typescript-tslint 'web-mode))
+         (setq web-mode-markup-indent-offset 2))))
+#+END_SRC
+* Misc
+** irc
+#+BEGIN_SRC emacs-lisp
+  (defun aj/irc (&optional server port nick)
+    "Log into irc server.
+    Uses default values for SERVER, PORT and NICK if they are not supplied"
+    (interactive)
+    (erc
+     :server (or server "irc.freenode.net")
+     :port   (or port   "6667")
+     :nick   (or nick   "andyjac")))
+
+  ;; enable company-mode for erc
+  (add-hook 'erc-mode-hook 'company-mode)
 #+END_SRC

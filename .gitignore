@@ -10,3 +10,4 @@ custom.el
 semanticdb/
 .mc-lists.el
 .lsp-session*
+.python-version

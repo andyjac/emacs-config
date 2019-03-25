@@ -179,10 +179,17 @@ I like the ~gruvbox~ themes.
 
 #+BEGIN_SRC emacs-lisp
   (use-package gruvbox-theme
-    :ensure t
-    :init (load-theme 'gruvbox-dark-hard))
+    :ensure t)
+
+  (load-theme 'gruvbox-dark-hard)
 #+END_SRC
 * Font
+Install [[https://adobe-fonts.github.io/source-code-pro/][Source Code Pro]].
+
+#+BEGIN_SRC sh
+  brew tap homebrew/cask-fonts && brew cask install font-source-code-pro
+#+END_SRC
+
 Tell emacs to use [[https://adobe-fonts.github.io/source-code-pro/][Source Code Pro]] as its default font.
 
 #+BEGIN_SRC emacs-lisp
@@ -975,6 +982,12 @@ Install ~helm-ag~ for use with ~ag~ ([[https://github.com/ggreer/the_silver_sear
     :config
     (setq helm-ag-fuzzy-match t))
 #+END_SRC
+
+Install ~ag~.
+
+#+BEGIN_SRC sh
+  brew install ag
+#+END_SRC
 ** [[https://github.com/ShingoFukuyama/helm-swoop][helm-swoop]]
 #+BEGIN_SRC emacs-lisp
   (use-package helm-swoop
@@ -1034,6 +1047,19 @@ Install and configure ~lsp-ui~.
           lsp-ui-sideline-enable nil
           lsp-ui-imenu-enable nil
           lsp-ui-flycheck-enable t))
+#+END_SRC
+*** [[https://github.com/tigersoldier/company-lsp][company-lsp]]
+Install ~company-lsp~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company-lsp
+    :ensure t)
+
+  (add-hook
+   'lsp-mode-hook
+   (lambda ()
+     (add-to-list 'company-backends 'company-lsp)
+     (company-mode 1)))
 #+END_SRC
 ** General
 *** [[https://github.com/Fuco1/smartparens][smartparens]]
@@ -1376,6 +1402,18 @@ Install and configure ~rjsx-mode~.
                       (company-mode)
                       (tern-mode))))
 #+END_SRC
+
+In order for ~tern-mode~ to work, we will also need ~node~ and the ~tern~ ~npm~
+package installed.
+
+#+BEGIN_SRC sh
+  # install nvm
+  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
+  # install latest LTS node version
+  nvm install node
+  # install tern
+  npm install -g tern
+#+END_SRC
 **** Linting
 **** Snippets
 *** Markup
@@ -1386,12 +1424,19 @@ Install ~yaml-mode~ for .ya?ml files
     :ensure t)
 #+END_SRC
 *** Go
+Install the ~go~ [[https://golang.org/dl/][programming language and tools]] and add ~$GOPATH/bin~ to your ~$PATH~ var.
+
+#+BEGIN_SRC shell
+  export $GOPATH="~/go"
+  export $PATH="$PATH:$GOPATH/bin"
+#+END_SRC
+
 Install and configure ~go-mode~.
 
 To use this setup with ~goimports~ we will need to install it
 as well.
 
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
   go get golang.org/x/tools/cmd/goimports
 #+END_SRC
 
@@ -1446,7 +1491,7 @@ Install and configure ~go-guru~.
 
 We will also need to install the ~guru~ golang package.
 
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
   go get golang.org/x/tools/cmd/guru
 #+END_SRC
 

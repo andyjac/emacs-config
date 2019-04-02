@@ -11,3 +11,4 @@ semanticdb/
 .mc-lists.el
 .lsp-session*
 .python-version
+transient/

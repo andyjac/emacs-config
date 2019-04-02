@@ -1538,6 +1538,11 @@ Install and configure ~web-mode~.
            (flycheck-add-mode 'typescript-tslint 'web-mode))
          (setq web-mode-markup-indent-offset 2))))
 #+END_SRC
+*** Shell
+**** Basic Configuration
+#+BEGIN_SRC emacs-lisp
+  (setq sh-basic-offset 2)
+#+END_SRC
 * Misc
 ** irc
 #+BEGIN_SRC emacs-lisp

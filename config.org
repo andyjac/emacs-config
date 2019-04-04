@@ -157,13 +157,8 @@ Add a function to jump straight to this file.
 Setup ~load-path~.
 
 #+BEGIN_SRC emacs-lisp
-  ;; (defun aj/expand-file-name-in-emacs-dir (name)
-  ;;   "Expands NAME to an absolute path inside the `user-emacs-directory'."
-  ;;   (expand-file-name name user-emacs-directory))
-
-  ;; (add-to-list 'load-path (aj/expand-file-name-in-emacs-dir "git"))
-  ;; (add-to-list 'load-path (aj/expand-file-name-in-emacs-dir "etc"))
-  ;; (add-to-list 'load-path (aj/expand-file-name-in-emacs-dir "git/distel/elisp/"))
+  (let ((default-directory  "~/.emacs.d/lib/"))
+    (normal-top-level-add-subdirs-to-load-path))
 #+END_SRC
 *** Use line wrapping
 #+BEGIN_SRC emacs-lisp
@@ -991,7 +986,6 @@ Install ~ag~.
 ** [[https://github.com/ShingoFukuyama/helm-swoop][helm-swoop]]
 #+BEGIN_SRC emacs-lisp
   (use-package helm-swoop
-    :ensure t
     :bind
     ("C-s" . 'helm-swoop)
     ("C-r" . 'helm-swoop))

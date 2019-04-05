@@ -201,6 +201,14 @@ Settings for MacOS.
     (setq dired-use-ls-dired nil)
     (setq ns-use-native-fullscreen nil))
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (when (string-equal system-type 'darwin)
+      (exec-path-from-shell-initialize)))
+#+END_SRC
 * Modeline
 ** Packages
 *** [[https://github.com/TheBB/spaceline][spaceline]]

@@ -179,16 +179,27 @@ I like the ~gruvbox~ themes.
   (load-theme 'gruvbox-dark-hard)
 #+END_SRC
 * Font
-Install [[https://adobe-fonts.github.io/source-code-pro/][Source Code Pro]].
-
-#+BEGIN_SRC sh
-  brew tap homebrew/cask-fonts && brew cask install font-source-code-pro
-#+END_SRC
-
-Tell emacs to use [[https://adobe-fonts.github.io/source-code-pro/][Source Code Pro]] as its default font.
+Set emacs default font:
 
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'default-frame-alist '(font . "Source Code Pro-14"))
+  ;; (add-to-list 'default-frame-alist '(font . "Source Code Pro-14"))
+  (add-to-list 'default-frame-alist '(font . "Hack-14"))
+#+END_SRC
+
+** [[https://adobe-fonts.github.io/source-code-pro/][source-code-pro]]
+Install ~source-code-pro~:
+
+#+BEGIN_SRC sh
+  brew tap homebrew/cask-fonts
+  brew cask install font-source-code-pro
+#+END_SRC
+
+** [[https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/Hack][hack]]
+Install ~hack~:
+
+#+BEGIN_SRC sh
+  brew tap homebrew/cask-fonts
+  brew cask install font-hack
 #+END_SRC
 * Darwin
 Settings for MacOS.

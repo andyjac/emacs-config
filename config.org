@@ -982,8 +982,8 @@ Install and configure ~helm~.
     :bind
     ("C-x C-f" . helm-find-files)
     ("C-x C-b" . helm-buffers-list)
-    ("M-x" . helm-M-x)
-    ("C-S-y" . helm-show-kill-ring)
+    ("M-x"     . helm-M-x)
+    ("C-S-y"   . helm-show-kill-ring)
     :config
     (setq helm-split-window-in-side-p nil
           helm-autoresize-max-height 0
@@ -1031,26 +1031,25 @@ Install ~ag~.
     :bind ("C-c c" . helm-tramp))
 #+END_SRC
 * Docker
-** Packages
-*** [[https://github.com/Silex/docker.el][docker]]
+** [[https://github.com/Silex/docker.el][docker]]
 #+BEGIN_SRC emacs-lisp
   (use-package docker
     :ensure t
     :bind ("C-c d" . docker))
 #+END_SRC
-*** [[https://github.com/spotify/dockerfile-mode][dockerfile-mode]]
+** [[https://github.com/spotify/dockerfile-mode][dockerfile-mode]]
 #+BEGIN_SRC emacs-lisp
   (use-package dockerfile-mode
     :ensure t
     :mode (("Dockerfile\\'" . dockerfile-mode)))
 #+END_SRC
-*** [[https://github.com/emacs-pe/docker-tramp.el][docker-tramp]]
+** [[https://github.com/emacs-pe/docker-tramp.el][docker-tramp]]
 #+BEGIN_SRC emacs-lisp
   (use-package docker-tramp
     :ensure t)
 #+END_SRC
 * Programming
-** LSP
+** (L)anguage (S)erver (P)rotocol
 *** [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
 Install and configure ~lsp-mode~.
 
@@ -1098,7 +1097,15 @@ Install ~company-lsp~.
     (use-package smartparens-config)
     (smartparens-global-mode 1))
 #+END_SRC
-*** rainbow-mode
+*** [[https://github.com/wbolster/emacs-direnv][direnv]]
+#+BEGIN_SRC emacs-lisp
+  (use-package direnv
+    :ensure t
+    :config
+    (setq direnv-show-paths-in-summary nil)
+    (direnv-mode))
+#+END_SRC
+*** [[https://elpa.gnu.org/packages/rainbow-mode.html][rainbow-mode]]
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
     :ensure t
@@ -1147,7 +1154,7 @@ Install ~company-lsp~.
         (switch-to-buffer-other-window http-buffer))))
 #+END_SRC
 ** Functions
-*** shell
+*** zsh
 Run a =zsh= instance.
 
 #+BEGIN_SRC emacs-lisp
@@ -1158,7 +1165,6 @@ Run a =zsh= instance.
 
   (bind-key "C-c ." 'aj/zsh)
 #+END_SRC
-** Snippets
 ** Completion
 *** Company
 ~company-mode~ is my preferred completion engine. Let's
@@ -1343,11 +1349,13 @@ The major mode for editing ~typescript~ files.
 
 #+BEGIN_SRC emacs-lisp
   (use-package typescript-mode
+    :config
+    (setq typescript-indent-level 2)
     :ensure t
     :mode (("\\.ts\\'" . typescript-mode)))
 #+END_SRC
 ***** [[https://github.com/ananthakumaran/tide/][tide]]
-~tide~ or *(T)ypeScript (I)nteractive (D)evelopment (E)nvironment*
+*(T)ypeScript (I)nteractive (D)evelopment (E)nvironment* or ~tide~
 is a set of tools that add IDE-like features for TypeScript
 projects. Let's install and configure it now.
 
@@ -1452,11 +1460,12 @@ Install ~yaml-mode~ for .ya?ml files
     :ensure t)
 #+END_SRC
 *** Go
-Install the ~go~ [[https://golang.org/dl/][programming language and tools]] and add ~$GOPATH/bin~ to your ~$PATH~ var.
+1. Install the [[https://golang.org/dl/][go programming language and tools]]
+2. Add ~$GOPATH/bin~ to your ~$PATH~ variable
 
 #+BEGIN_SRC shell
-  export $GOPATH="~/go"
-  export $PATH="$PATH:$GOPATH/bin"
+  export $GOPATH="~/go" # or wherever you want go code to live
+  export $PATH="$PATH:$GOPATH/bin" $ put go executables on your path
 #+END_SRC
 
 Install and configure ~go-mode~.
@@ -1550,6 +1559,17 @@ Install and configure ~web-mode~.
 #+BEGIN_SRC emacs-lisp
   (use-package web-mode
     :ensure t
+    :config
+    (setq web-mode-code-indent-offset 2)
+    (setq web-mode-css-indent-offset 2)
+    (setq web-mode-markup-indent-offset 2)
+    :init
+    (setq-default
+     web-mode-comment-formats
+     '(("java"       . "/*")
+       ("javascript" . "//")
+       ("jsx"        . "//")
+       ("php"        . "/*")))
     :mode (("\\.tsx\\'" . web-mode))
     :hook
     (web-mode
@@ -1569,6 +1589,13 @@ Install and configure ~web-mode~.
 *** Shell
 **** Basic Configuration
 #+BEGIN_SRC emacs-lisp
+  (use-package sh-mode
+    :hook
+    (sh-mode
+     . (lambda ()
+       (company-mode 1)))
+    :mode (("\\zshrc\\'" . sh-mode)))
+
   (setq sh-basic-offset 2)
 #+END_SRC
 * Misc

@@ -341,6 +341,7 @@ Rotates the windows inside the current frame in a counter-clockwise direction.
 #+END_SRC
 ** Packages
 *** [[https://github.com/abo-abo/ace-window][ace-window]]
+
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
     :ensure t
@@ -352,6 +353,22 @@ Rotates the windows inside the current frame in a counter-clockwise direction.
     ;; i prefer keys on the home row to the default 0-9
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
     :bind ("M-o" . ace-window))
+#+END_SRC
+*** [[https://github.com/cyrus-and/zoom][zoom]]
+#+BEGIN_SRC emacs-lisp
+  (use-package zoom
+    :ensure t
+    :config
+    (setq zoom-size '(0.618 . 0.618))
+    (setq temp-buffer-resize-mode t)
+    (zoom-mode 1))
+#+END_SRC
+*** [[https://github.com/wasamasa/eyebrowse][eyebrowse]]
+#+BEGIN_SRC emacs-lisp
+  (use-package eyebrowse
+    :ensure t
+    :config
+    (eyebrowse-mode 1))
 #+END_SRC
 * Files & Directories
 ** Packages

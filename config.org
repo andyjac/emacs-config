@@ -1128,7 +1128,7 @@ Install ~company-lsp~.
   (use-package rainbow-mode
     :ensure t
     :hook
-    ((org-mode lisp-interaction-mode) . rainbow-mode))
+    ((org-mode lisp-interaction-mode typescript-mode) . rainbow-mode))
 #+END_SRC
 *** [[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]]
 #+BEGIN_SRC emacs-lisp
@@ -1197,14 +1197,15 @@ install it and do some basic configuration.
     ;; show completion candidates after 3 chars are typed
     (setq company-minimum-prefix-length 3)
     :bind
-    (:map company-active-map
-          ("M-n" . nil)
-          ("M-p" . nil)
-          ("C-n" . 'company-select-next)
-          ("C-j" . 'company-select-next)
-          ("C-p" . 'company-select-previous)
-          ("C-k" . 'company-select-previous)
-          ("C-f" . 'company-filter-candidates)))
+    (("C-c <tab>" . 'company-complete)
+     :map company-active-map
+     ("M-n"     . nil)
+     ("M-p"     . nil)
+     ("C-n"     . 'company-select-next)
+     ("C-j"     . 'company-select-next)
+     ("C-p"     . 'company-select-previous)
+     ("C-k"     . 'company-select-previous)
+     ("C-f"     . 'company-filter-candidates)))
 #+END_SRC
 ** Linting
 *** [[https://github.com/flycheck/flycheck][flycheck]]

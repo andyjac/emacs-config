@@ -5,7 +5,6 @@ projectile.cache
 recentf
 backups/
 tramp
-config.el
 custom.el
 semanticdb/
 .mc-lists.el

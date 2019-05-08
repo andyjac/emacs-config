@@ -5,7 +5,7 @@ projectile.cache
 recentf
 backups/
 tramp
-custom.el
+config.el
 semanticdb/
 .mc-lists.el
 .lsp-session*

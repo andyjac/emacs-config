@@ -168,6 +168,10 @@ Setup ~load-path~.
 #+BEGIN_SRC emacs-lisp
   (bind-key [remap kill-line] 'kill-whole-line)
 #+END_SRC
+*** Turn on ~winner-mode~
+#+BEGIN_SRC emacs-lisp
+  (winner-mode 1)
+#+END_SRC
 * Theme
 The most important piece of any editor configuration: A good dark theme.
 I like the ~gruvbox~ themes.
@@ -273,6 +277,8 @@ A place to global keybindings.
 #+BEGIN_SRC emacs-lisp
   (bind-key "M-F" 'forward-to-word)
   (bind-key "M-B" 'backward-to-word)
+  (bind-key "C-<" 'winner-undo)
+  (bind-key "C->" 'winner-redo)
 #+END_SRC
 * Frames, Windows & Buffers
 ** Functions
@@ -356,12 +362,18 @@ Rotates the windows inside the current frame in a counter-clockwise direction.
 #+END_SRC
 *** [[https://github.com/cyrus-and/zoom][zoom]]
 #+BEGIN_SRC emacs-lisp
-  (use-package zoom
-    :ensure t
-    :config
-    (setq zoom-size '(0.618 . 0.618))
-    (setq temp-buffer-resize-mode t)
-    (zoom-mode 1))
+    (defun size-callback ()
+      (cond ((> (frame-pixel-width) 1280) '(90 . 0.75))
+            (t                            '(0.5 . 0.5))))
+
+    (use-package zoom
+      :ensure t
+      :config
+      ;; (setq zoom-size '(0.618 . 0.618))
+      (custom-set-variables '(zoom-size 'size-callback))
+      (setq temp-buffer-resize-mode t)
+      ;; (zoom-mode )
+      )
 #+END_SRC
 *** [[https://github.com/wasamasa/eyebrowse][eyebrowse]]
 #+BEGIN_SRC emacs-lisp
@@ -839,6 +851,17 @@ My hydras.
 
   (bind-key "C-M-o" 'indent-and-open-newline)
 #+END_SRC
+*** join-line
+#+BEGIN_SRC emacs-lisp
+  (defun aj/join-lines (arg)
+    (interactive "p")
+    (end-of-line)
+    (delete-char 1)
+    (delete-horizontal-space)
+    (insert " "))
+
+  (bind-key "C-S-j" 'aj/join-lines)
+#+END_SRC
 ** Packages
 *** [[https://github.com/syohex/emacs-anzu][anzu]]
 #+BEGIN_SRC emacs-lisp
@@ -1072,10 +1095,10 @@ Install ~ag~.
 Install and configure ~lsp-mode~.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package lsp-mode
-    :ensure t
-    :commands lsp
-    :config (setq lsp-prefer-flymake nil))
+    (use-package lsp-mode
+      :ensure t
+      :commands lsp
+      :config (setq lsp-prefer-flymake nil))
 #+END_SRC
 *** [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]]
 Install and configure ~lsp-ui~.
@@ -1128,7 +1151,7 @@ Install ~company-lsp~.
   (use-package rainbow-mode
     :ensure t
     :hook
-    ((org-mode lisp-interaction-mode typescript-mode) . rainbow-mode))
+    ((org-mode lisp-interaction-mode typescript-mode css-mode) . rainbow-mode))
 #+END_SRC
 *** [[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]]
 #+BEGIN_SRC emacs-lisp
@@ -1220,7 +1243,7 @@ Install ~flycheck~.
 Basic configuration.
 
 #+BEGIN_SRC emacs-lisp
-  (setq c-basic-offset 4)
+  (setq c-basic-offset 2)
   (c-set-offset 'substatement-open 0)
   (c-set-offset 'arglist-intro '+)
   (c-set-offset 'arglist-close 0)
@@ -1506,12 +1529,15 @@ as well.
          (setq gofmt-command "goimports")
          (if (not (string-match "go" compile-command))
              (set (make-local-variable 'compile-command)
-                  "go build -v && go test -v && go vet"))))
-    :bind (:map go-mode-map
-                ("C-c C-c" . compile)
-                ("C-c C-p" . recompile)
-                ("M-]" . next-error)
-                ("M-[" . previous-error)))
+                  "go build -v && go test -v && go vet"))
+         (flycheck-mode 1)))
+    :bind
+    (:map go-mode-map
+          ("C-c C-c" . compile)
+          ("C-c C-p" . recompile)
+          ("M-]"     . next-error)
+          ("M-["     . previous-error)
+          ("M-."     . godef-jump)))
 #+END_SRC
 
 Install and configure ~go-eldoc~.
@@ -1528,6 +1554,7 @@ Install and configure ~company-go~.
 ~company-go~ uses [[https://github.com/nsf/gocode][gocode]] for completion, so let's
 install that first.
 
+TODO: Update this to use correct gocode package
 #+BEGIN_SRC shell
   go get -u github.com/nsf/gocode
 #+END_SRC
@@ -1552,23 +1579,52 @@ We will also need to install the ~guru~ golang package.
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (use-package go-guru
-    :ensure t
-    :bind (:map go-mode-map
-                ("M-." . go-guru-definition)
-                ("M-," . pop-tag-mark))
-    :hook (go-mode
-           . (lambda ()
-               (require 'go-guru)
-               (go-guru-hl-identifier-mode 1))))
+  ;; (use-package go-guru
+  ;;   :ensure t
+  ;;   :config
+  ;;   (setq go-guru-command "/Users/andrewjacobson/go/bin/guru")
+  ;;   :bind (:map go-mode-map
+  ;;               ("M-." . go-guru-definition)
+  ;;               ("M-," . pop-tag-mark))
+  ;;   :hook (go-mode
+  ;;          . (lambda ()
+  ;;              (require 'go-guru)
+  ;;              (go-guru-hl-identifier-mode 1))))
 #+END_SRC
-*** CSS
+
+Install ~go-playground~, a REPL buffer for ~go~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package go-playground
+    :ensure t
+    :bind ("C-c r g" . go-playground))
+#+END_SRC
+
+Install ~go-projectile~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package go-projectile
+    :ensure t
+    :config
+    ;; (go-projectile-tools-add-path)
+    ;; (go-projectile-install-tools)
+    (setq go-guru-command "/Users/andrewjacobson/go/bin/guru"))
+#+END_SRC
+*** CSS/Less/Sass
 Configure ~css-mode~.
 
 #+BEGIN_SRC emacs-lisp
   (use-package css-mode
     :config
     (setq css-indent-offset 2)
+    (company-mode 1))
+#+END_SRC
+
+Configure ~less-mode~.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package less-css-mode
+    :config
     (company-mode 1))
 #+END_SRC
 *** Web
@@ -1597,12 +1653,15 @@ Install and configure ~web-mode~.
            (if (equal web-mode-content-type "javascript")
                (web-mode-set-content-type "jsx"))
            (tide-setup)
-           (flycheck-mode 1)
            (setq flycheck-check-syntax-automatically '(save mode-enabled))
            (tide-hl-identifier-mode 1)
            (eldoc-mode 1)
            (company-mode 1)
-           (flycheck-add-mode 'typescript-tslint 'web-mode))
+           ;; flycheck
+           (flycheck-mode 1)
+           ;; (flycheck-disable-checker 'typescript-tide)
+           (flycheck-add-mode 'typescript-tslint 'web-mode)
+           (flycheck-disable-checker 'tsx-tide))
          (setq web-mode-markup-indent-offset 2))))
 #+END_SRC
 *** Shell

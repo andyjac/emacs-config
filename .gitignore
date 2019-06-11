@@ -11,3 +11,4 @@ semanticdb/
 .lsp-session*
 .python-version
 transient/
+ac-comphist.dat

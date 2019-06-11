@@ -1025,6 +1025,7 @@ Install and configure ~helm~.
     ("C-x C-b" . helm-buffers-list)
     ("M-x"     . helm-M-x)
     ("C-S-y"   . helm-show-kill-ring)
+    ("C-c C-r" . helm-resume)
     :config
     (setq helm-split-window-in-side-p nil
           helm-autoresize-max-height 0
@@ -1212,23 +1213,30 @@ Run a =zsh= instance.
 install it and do some basic configuration.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package company
-    :ensure t
-    :config
-    ;; no delay before showing completion candidates
-    (setq company-idle-delay 0)
-    ;; show completion candidates after 3 chars are typed
-    (setq company-minimum-prefix-length 3)
-    :bind
-    (("C-c <tab>" . 'company-complete)
-     :map company-active-map
-     ("M-n"     . nil)
-     ("M-p"     . nil)
-     ("C-n"     . 'company-select-next)
-     ("C-j"     . 'company-select-next)
-     ("C-p"     . 'company-select-previous)
-     ("C-k"     . 'company-select-previous)
-     ("C-f"     . 'company-filter-candidates)))
+    (use-package company
+      :ensure t
+      :config
+      ;; no delay before showing completion candidates
+      (setq company-idle-delay 0)
+      ;; show completion candidates after 3 chars are typed
+      (setq company-minimum-prefix-length 3)
+      :bind
+      (("C-c <tab>" . 'company-complete)
+       :map company-active-map
+       ("M-n"     . nil)
+       ("M-p"     . nil)
+       ("C-n"     . 'company-select-next)
+       ("C-j"     . 'company-select-next)
+       ("C-p"     . 'company-select-previous)
+       ("C-k"     . 'company-select-previous)
+       ("C-f"     . 'company-filter-candidates)
+       :map company-search-map
+       ("C-n" . 'company-search-repeat-forward)
+       ("C-p" . 'company-search-repeat-backward)
+       ("C-j" . 'company-search-repeat-forward)
+       ("C-k" . 'company-search-repeat-backward)
+       ("M-n" . 'company-select-next)
+       ("C-k" . 'company-select-previous)))
 #+END_SRC
 ** Linting
 *** [[https://github.com/flycheck/flycheck][flycheck]]
@@ -1410,6 +1418,7 @@ projects. Let's install and configure it now.
      (lambda ()
        (setq flycheck-check-syntax-automatically '(save mode-enabled))
        (tide-setup)
+       (flycheck-add-next-checker 'typescript-tide '(t . typescript-tslint) 'append)
        (tide-hl-identifier-mode 1)
        (eldoc-mode 1))))
 #+END_SRC
@@ -1566,6 +1575,10 @@ TODO: Update this to use correct gocode package
     :hook
     (go-mode
      . (lambda ()
+         ;; force company to wait for user to
+         ;; ask for completions, because gocode
+         ;; is slow as fuck
+         (setq-local company-idle-delay nil)
          (add-to-list 'company-backends 'company-go)
          (company-mode 1))))
 #+END_SRC
@@ -1657,12 +1670,10 @@ Install and configure ~web-mode~.
            (tide-hl-identifier-mode 1)
            (eldoc-mode 1)
            (company-mode 1)
-           ;; flycheck
-           (flycheck-mode 1)
-           ;; (flycheck-disable-checker 'typescript-tide)
-           (flycheck-add-mode 'typescript-tslint 'web-mode)
-           (flycheck-disable-checker 'tsx-tide))
+           (flycheck-mode 1))
          (setq web-mode-markup-indent-offset 2))))
+
+  (flycheck-add-mode 'typescript-tslint 'web-mode)
 #+END_SRC
 *** Shell
 **** Basic Configuration
